@@ -18,7 +18,7 @@ export async function DELETE(req: Request) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("role")
     .eq("id", user.id)
     .single();
@@ -47,7 +47,7 @@ export async function DELETE(req: Request) {
 
   // 선교회보고서 삭제
   let missionQuery = admin
-    .from("mission_reports")
+    .from("sunbogo_mission_reports")
     .delete()
     .eq("report_date", date);
   if (missionId) missionQuery = missionQuery.eq("mission_id", missionId);

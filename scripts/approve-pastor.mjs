@@ -7,7 +7,7 @@ const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
 // 1. 현재 pastor 계정 조회
 const { data: pastors, error: fetchErr } = await supabase
-  .from('profiles')
+  .from('sunbogo_profiles')
   .select('id, name, role, status')
   .eq('role', 'pastor');
 
@@ -30,7 +30,7 @@ if (pending.length === 0) {
 
 for (const p of pending) {
   const { error: updateErr } = await supabase
-    .from('profiles')
+    .from('sunbogo_profiles')
     .update({ status: 'active' })
     .eq('id', p.id);
 

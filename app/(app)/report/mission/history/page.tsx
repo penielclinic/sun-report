@@ -15,14 +15,14 @@ export default async function MissionReportHistoryPage() {
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("*")
     .eq("id", user.id)
     .single();
   if (!profile || profile.role !== "mission_leader") redirect("/dashboard");
 
   const { data: reports } = await supabase
-    .from("mission_reports")
+    .from("sunbogo_mission_reports")
     .select("id, report_date, status, total_sun, total_attend, total_offering")
     .eq("mission_id", profile.mission_id!)
     .order("report_date", { ascending: false });

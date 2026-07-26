@@ -15,7 +15,7 @@ export async function GET(request: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       const { data: profile } = await supabase
-        .from("profiles")
+        .from("sunbogo_profiles")
         .select("status")
         .eq("id", user.id)
         .maybeSingle();

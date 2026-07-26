@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "인증 필요" }, { status: 401 });
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("role")
     .eq("id", user.id)
     .single();

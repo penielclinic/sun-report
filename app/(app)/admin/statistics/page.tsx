@@ -66,7 +66,7 @@ export default async function StatisticsPage({
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
-    .from("profiles").select("role").eq("id", user.id).single();
+    .from("sunbogo_profiles").select("role").eq("id", user.id).single();
   if (!profile || profile.role !== "pastor") redirect("/dashboard");
 
   const params = await searchParams;
@@ -105,7 +105,7 @@ export default async function StatisticsPage({
 
   // ── 선교회보고서 (헌금)
   const { data: missionReports } = await supabase
-    .from("mission_reports")
+    .from("sunbogo_mission_reports")
     .select("report_date, total_offering")
     .gte("report_date", since)
     .eq("status", "submitted");

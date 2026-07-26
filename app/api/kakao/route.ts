@@ -77,7 +77,7 @@ export async function POST(request: Request) {
   if (type === "sun_submitted") {
     // 순보고서 제출 → 해당 선교회장에게 알림톡
     const { data: leaders } = await admin
-      .from("profiles")
+      .from("sunbogo_profiles")
       .select("name")
       .eq("role", "mission_leader")
       .eq("mission_id", parseInt(data.missionId));

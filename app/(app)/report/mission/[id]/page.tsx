@@ -17,14 +17,14 @@ export default async function MissionReportDetailPage({
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("*")
     .eq("id", user.id)
     .single();
   if (!profile) redirect("/login");
 
   const { data: report } = await supabase
-    .from("mission_reports")
+    .from("sunbogo_mission_reports")
     .select("*")
     .eq("id", id)
     .single();

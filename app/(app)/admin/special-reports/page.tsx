@@ -9,7 +9,7 @@ export default async function SpecialReportsPage() {
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("*")
     .eq("id", user.id)
     .single();

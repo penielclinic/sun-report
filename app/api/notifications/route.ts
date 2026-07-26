@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
   // 담임목사 계정 조회
   const { data: pastors } = await admin
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("id")
     .eq("role", "pastor");
 

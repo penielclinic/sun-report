@@ -1,5 +1,5 @@
 -- 사용자 프로필
-CREATE TABLE IF NOT EXISTS profiles (
+CREATE TABLE IF NOT EXISTS sunbogo_profiles (
   id          UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   name        TEXT NOT NULL,
   role        TEXT NOT NULL CHECK (role IN ('sun_leader', 'mission_leader', 'pastor')),
@@ -32,13 +32,13 @@ INSERT INTO sun_directory (sun_number, sun_leader, mission_id) VALUES
 ON CONFLICT (sun_number) DO NOTHING;
 
 -- RLS 활성화
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sunbogo_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sun_directory ENABLE ROW LEVEL SECURITY;
 
 -- 본인 프로필만 조회·수정
-CREATE POLICY "프로필 본인 조회" ON profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "프로필 본인 수정" ON profiles FOR UPDATE USING (auth.uid() = id);
-CREATE POLICY "프로필 생성" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "프로필 본인 조회" ON sunbogo_profiles FOR SELECT USING (auth.uid() = id);
+CREATE POLICY "프로필 본인 수정" ON sunbogo_profiles FOR UPDATE USING (auth.uid() = id);
+CREATE POLICY "프로필 생성" ON sunbogo_profiles FOR INSERT WITH CHECK (auth.uid() = id);
 
 -- 순 편성표는 로그인한 모든 사용자 조회
 CREATE POLICY "편성표 조회" ON sun_directory FOR SELECT USING (auth.role() = 'authenticated');

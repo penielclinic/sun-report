@@ -13,7 +13,7 @@ async function requirePastor() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const { data: profile } = await supabase.from("sunbogo_profiles").select("role").eq("id", user.id).single();
   if (!profile || profile.role !== "pastor") return null;
   return user;
 }
@@ -25,7 +25,7 @@ export async function GET() {
 
   const admin = adminClient();
   const { data } = await admin
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("id, name, role, sun_number, mission_id, phone")
     .in("role", ["sun_leader", "mission_leader"])
     .eq("status", "active")

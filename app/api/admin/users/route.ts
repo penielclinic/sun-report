@@ -13,7 +13,7 @@ async function requirePastor() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
-  const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+  const { data: profile } = await supabase.from("sunbogo_profiles").select("role").eq("id", user.id).single();
   if (!profile || profile.role !== "pastor") return null;
   return user;
 }
@@ -36,7 +36,7 @@ export async function PATCH(request: Request) {
   };
 
   const admin = getAdminClient();
-  const { error } = await admin.from("profiles").update(updates).eq("id", userId);
+  const { error } = await admin.from("sunbogo_profiles").update(updates).eq("id", userId);
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
   return NextResponse.json({ success: true });
@@ -56,8 +56,8 @@ export async function DELETE(request: Request) {
     (await admin.from("sun_reports").select("id").eq("created_by", userId)).data?.map((r: { id: string }) => r.id) ?? []
   );
   await admin.from("sun_reports").delete().eq("created_by", userId);
-  await admin.from("mission_reports").delete().eq("created_by", userId);
-  await admin.from("profiles").delete().eq("id", userId);
+  await admin.from("sunbogo_mission_reports").delete().eq("created_by", userId);
+  await admin.from("sunbogo_profiles").delete().eq("id", userId);
 
   // auth 계정 삭제
   const { error } = await admin.auth.admin.deleteUser(userId);

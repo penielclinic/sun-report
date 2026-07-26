@@ -69,7 +69,7 @@ export async function POST(request: Request) {
     const missionId = reportPayload.mission_id;
     if (missionId) {
       const { data: leaders } = await admin
-        .from("profiles")
+        .from("sunbogo_profiles")
         .select("id")
         .eq("role", "mission_leader")
         .eq("mission_id", missionId);

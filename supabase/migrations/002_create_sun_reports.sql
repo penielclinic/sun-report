@@ -41,10 +41,10 @@ ALTER TABLE sun_report_members ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "순장 본인 보고서 조회" ON sun_reports
   FOR SELECT USING (
     auth.uid() = created_by
-    OR (SELECT role FROM profiles WHERE id = auth.uid()) IN ('mission_leader', 'pastor')
+    OR (SELECT role FROM sunbogo_profiles WHERE id = auth.uid()) IN ('mission_leader', 'pastor')
     OR (
-      (SELECT role FROM profiles WHERE id = auth.uid()) = 'mission_leader'
-      AND mission_id = (SELECT mission_id FROM profiles WHERE id = auth.uid())
+      (SELECT role FROM sunbogo_profiles WHERE id = auth.uid()) = 'mission_leader'
+      AND mission_id = (SELECT mission_id FROM sunbogo_profiles WHERE id = auth.uid())
     )
   );
 
@@ -59,14 +59,14 @@ CREATE POLICY "순장 보고서 수정" ON sun_reports
 -- 선교회장: 소속 선교회 순보고서 열람
 CREATE POLICY "선교회장 소속 순 열람" ON sun_reports
   FOR SELECT USING (
-    (SELECT role FROM profiles WHERE id = auth.uid()) = 'mission_leader'
-    AND mission_id = (SELECT mission_id FROM profiles WHERE id = auth.uid())
+    (SELECT role FROM sunbogo_profiles WHERE id = auth.uid()) = 'mission_leader'
+    AND mission_id = (SELECT mission_id FROM sunbogo_profiles WHERE id = auth.uid())
   );
 
 -- 담임목사: 전체 열람
 CREATE POLICY "담임목사 전체 열람" ON sun_reports
   FOR SELECT USING (
-    (SELECT role FROM profiles WHERE id = auth.uid()) = 'pastor'
+    (SELECT role FROM sunbogo_profiles WHERE id = auth.uid()) = 'pastor'
   );
 
 -- 순원 현황 RLS (보고서에 접근 가능한 사람만)
@@ -77,10 +77,10 @@ CREATE POLICY "순원현황 조회" ON sun_report_members
       WHERE sr.id = report_id
       AND (
         sr.created_by = auth.uid()
-        OR (SELECT role FROM profiles WHERE id = auth.uid()) = 'pastor'
+        OR (SELECT role FROM sunbogo_profiles WHERE id = auth.uid()) = 'pastor'
         OR (
-          (SELECT role FROM profiles WHERE id = auth.uid()) = 'mission_leader'
-          AND sr.mission_id = (SELECT mission_id FROM profiles WHERE id = auth.uid())
+          (SELECT role FROM sunbogo_profiles WHERE id = auth.uid()) = 'mission_leader'
+          AND sr.mission_id = (SELECT mission_id FROM sunbogo_profiles WHERE id = auth.uid())
         )
       )
     )

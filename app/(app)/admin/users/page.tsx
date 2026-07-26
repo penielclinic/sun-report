@@ -9,7 +9,7 @@ export default async function UsersAdminPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+  const { data: profile } = await supabase.from("sunbogo_profiles").select("*").eq("id", user.id).single();
   if (!profile || profile.role !== "pastor") redirect("/dashboard");
 
   // 서비스 롤로 전체 사용자 조회 (auth 이메일 포함)
@@ -18,7 +18,7 @@ export default async function UsersAdminPage() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  const { data: profiles } = await admin.from("profiles").select("*").order("status").order("role");
+  const { data: profiles } = await admin.from("sunbogo_profiles").select("*").order("status").order("role");
   const { data: { users: authUsers } } = await admin.auth.admin.listUsers({ perPage: 500 });
 
   // profile에 이메일 합치기

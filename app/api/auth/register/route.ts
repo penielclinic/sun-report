@@ -55,7 +55,7 @@ export async function POST(request: Request) {
       : (mission_id ?? null);
 
   // 프로필 생성
-  const { error: profileError } = await admin.from("profiles").insert({
+  const { error: profileError } = await admin.from("sunbogo_profiles").insert({
     id: userId,
     name,
     phone: phone ?? null,

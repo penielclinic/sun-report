@@ -18,7 +18,7 @@ export default async function AdminDashboard() {
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("*")
     .eq("id", user.id)
     .single();
@@ -34,7 +34,7 @@ export default async function AdminDashboard() {
 
   // 이번 주 선교회보고서 현황
   const { data: missionReports } = await supabase
-    .from("mission_reports")
+    .from("sunbogo_mission_reports")
     .select("id, mission_id, status, total_attend, total_bible, total_offering")
     .eq("report_date", thisSunday);
 

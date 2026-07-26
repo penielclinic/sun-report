@@ -12,7 +12,7 @@ export default async function NewMissionReportPage() {
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("*")
     .eq("id", user.id)
     .single();
@@ -23,7 +23,7 @@ export default async function NewMissionReportPage() {
 
   // 이미 있으면 리다이렉트
   const { data: existing } = await supabase
-    .from("mission_reports")
+    .from("sunbogo_mission_reports")
     .select("id")
     .eq("mission_id", missionId)
     .eq("report_date", thisSunday)

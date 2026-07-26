@@ -38,7 +38,7 @@ export async function GET(request: Request) {
 
   // 미제출 순장 프로필 조회 (1~44순)
   const { data: allSunLeaders } = await admin
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("id, name, sun_number")
     .eq("role", "sun_leader")
     .eq("status", "approved");

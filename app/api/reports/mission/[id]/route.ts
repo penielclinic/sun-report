@@ -21,7 +21,7 @@ export async function DELETE(
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("role, mission_id")
     .eq("id", user.id)
     .single();
@@ -29,7 +29,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const { data: report } = await supabase
-    .from("mission_reports")
+    .from("sunbogo_mission_reports")
     .select("id, status, mission_id, created_by")
     .eq("id", id)
     .single();
@@ -44,6 +44,6 @@ export async function DELETE(
       { status: 409 }
     );
 
-  await adminClient().from("mission_reports").delete().eq("id", id);
+  await adminClient().from("sunbogo_mission_reports").delete().eq("id", id);
   return NextResponse.json({ ok: true });
 }

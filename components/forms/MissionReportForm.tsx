@@ -109,13 +109,13 @@ export default function MissionReportForm({
 
       if (reportId) {
         const { error } = await supabase
-          .from("mission_reports")
+          .from("sunbogo_mission_reports")
           .update(payload)
           .eq("id", reportId);
         if (error) throw error;
       } else {
         const { data, error } = await supabase
-          .from("mission_reports")
+          .from("sunbogo_mission_reports")
           .insert(payload)
           .select("id")
           .single();

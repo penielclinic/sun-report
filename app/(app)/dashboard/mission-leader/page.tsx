@@ -24,7 +24,7 @@ export default async function MissionLeaderDashboard({
   if (!user) redirect("/login");
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("*")
     .eq("id", user.id)
     .single();
@@ -61,7 +61,7 @@ export default async function MissionLeaderDashboard({
 
   // 선택 날짜의 선교회보고서 현황
   const { data: missionReport } = await supabase
-    .from("mission_reports")
+    .from("sunbogo_mission_reports")
     .select("id, status")
     .eq("mission_id", missionId)
     .eq("report_date", selectedDate)

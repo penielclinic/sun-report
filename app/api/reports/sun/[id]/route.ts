@@ -21,7 +21,7 @@ export async function DELETE(
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { data: profile } = await supabase
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("role, sun_number")
     .eq("id", user.id)
     .single();
@@ -41,7 +41,7 @@ export async function DELETE(
 
   // 해당 날짜 선교회보고서가 submitted인지 확인
   const { data: missionReport } = await supabase
-    .from("mission_reports")
+    .from("sunbogo_mission_reports")
     .select("status")
     .eq("mission_id", report.mission_id)
     .eq("report_date", report.report_date)

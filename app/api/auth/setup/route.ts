@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
   // 이미 프로필이 있으면 중복 방지
   const { data: existing } = await supabase
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("id")
     .eq("id", user.id)
     .maybeSingle();
@@ -47,7 +47,7 @@ export async function POST(request: Request) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  const { error } = await admin.from("profiles").insert({
+  const { error } = await admin.from("sunbogo_profiles").insert({
     id: user.id,
     name,
     phone: phone || null,

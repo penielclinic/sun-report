@@ -8,7 +8,7 @@ export default async function MessagesPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+  const { data: profile } = await supabase.from("sunbogo_profiles").select("*").eq("id", user.id).single();
   if (!profile || profile.role !== "pastor") redirect("/dashboard");
 
   const admin = createAdminClient(
@@ -16,7 +16,7 @@ export default async function MessagesPage() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
   const { data: recipients } = await admin
-    .from("profiles")
+    .from("sunbogo_profiles")
     .select("id, name, role, sun_number, mission_id, phone")
     .in("role", ["sun_leader", "mission_leader"])
     .eq("status", "active")

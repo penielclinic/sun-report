@@ -48,7 +48,7 @@ alter table pastoral_briefings enable row level security;
 create policy "목사님만 브리핑 접근"
   on pastoral_briefings for all
   using (
-    (select role from profiles where id = auth.uid()) = 'pastor'
+    (select role from sunbogo_profiles where id = auth.uid()) = 'pastor'
   );
 
 -- ----------------------------------------------------------------
@@ -116,17 +116,17 @@ alter table pastoral_alerts enable row level security;
 create policy "목사님 전체 알림 접근"
   on pastoral_alerts for all
   using (
-    (select role from profiles where id = auth.uid()) = 'pastor'
+    (select role from sunbogo_profiles where id = auth.uid()) = 'pastor'
   );
 
 create policy "선교회장 소속 알림 열람"
   on pastoral_alerts for select
   using (
-    (select role from profiles where id = auth.uid()) = 'mission_leader'
+    (select role from sunbogo_profiles where id = auth.uid()) = 'mission_leader'
     and alert_type in ('absence_4w', 'absence_8w')
     and sun_number in (
       select sd.sun_number from sun_directory sd
-      join profiles p on p.mission_id = sd.mission_id
+      join sunbogo_profiles p on p.mission_id = sd.mission_id
       where p.id = auth.uid()
     )
   );
@@ -134,9 +134,9 @@ create policy "선교회장 소속 알림 열람"
 create policy "순장 본인 순 알림 열람"
   on pastoral_alerts for select
   using (
-    (select role from profiles where id = auth.uid()) = 'sun_leader'
+    (select role from sunbogo_profiles where id = auth.uid()) = 'sun_leader'
     and alert_type = 'absence_2w'
-    and sun_number = (select sun_number from profiles where id = auth.uid())
+    and sun_number = (select sun_number from sunbogo_profiles where id = auth.uid())
   );
 
 -- ----------------------------------------------------------------
@@ -185,7 +185,7 @@ alter table alert_settings enable row level security;
 create policy "목사님만 알림설정 관리"
   on alert_settings for all
   using (
-    (select role from profiles where id = auth.uid()) = 'pastor'
+    (select role from sunbogo_profiles where id = auth.uid()) = 'pastor'
   );
 
 create policy "모든 인증 사용자 알림설정 열람"
@@ -219,7 +219,7 @@ alter table alert_recipients enable row level security;
 create policy "목사님만 수신자 관리"
   on alert_recipients for all
   using (
-    (select role from profiles where id = auth.uid()) = 'pastor'
+    (select role from sunbogo_profiles where id = auth.uid()) = 'pastor'
   );
 
 -- ----------------------------------------------------------------
@@ -343,7 +343,7 @@ select cron.schedule(
     body    := '{"trigger": "cron"}'
   );
   $$
-) on conflict (jobname) do update set schedule = excluded.schedule;
+);
 
 -- 매주 월요일 08:00 KST (23:00 UTC 전날) — 브리핑 알림톡 발송
 select cron.schedule(
@@ -360,7 +360,7 @@ select cron.schedule(
     body    := '{"trigger": "send_alimtalk"}'
   );
   $$
-) on conflict (jobname) do update set schedule = excluded.schedule;
+);
 
 -- 매일 07:00 KST (22:00 UTC 전날) — Quiet Hours 보류 알림 발송
 select cron.schedule(
@@ -377,4 +377,4 @@ select cron.schedule(
     body    := '{"trigger": "send_pending"}'
   );
   $$
-) on conflict (jobname) do update set schedule = excluded.schedule;
+);

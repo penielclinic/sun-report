@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
   if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { data: profile } = await supabase
-    .from("profiles").select("role").eq("id", user.id).single();
+    .from("sunbogo_profiles").select("role").eq("id", user.id).single();
   if (!profile || profile.role !== "pastor")
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
 
   // ③ 선교회보고서 (헌금)
   const { data: missionReports } = await supabase
-    .from("mission_reports")
+    .from("sunbogo_mission_reports")
     .select("mission_id, total_offering, report_date")
     .eq("status", "submitted")
     .gte("report_date", startDate)
