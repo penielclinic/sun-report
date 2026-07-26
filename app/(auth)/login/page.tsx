@@ -82,31 +82,30 @@ export default function LoginPage() {
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="loginId" className="text-base font-medium">아이디</Label>
+                <Label htmlFor="loginId" className="text-base font-medium">이름 (아이디)</Label>
                 <Input
                   id="loginId"
                   type="text"
-                  placeholder="아이디를 입력하세요"
+                  placeholder="이름을 입력하세요"
                   value={loginId}
                   onChange={(e) => setLoginId(e.target.value)}
                   required
                   autoComplete="username"
                   className="h-12 text-base"
                 />
-                <p className="text-xs text-muted-foreground">
-                  영문/숫자 4자 이상, 또는 한글 2자 이상
-                </p>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-base font-medium">비밀번호</Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="비밀번호를 입력하세요"
+                  placeholder="숫자 4자리 이상"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   autoComplete="current-password"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   className="h-12 text-base"
                 />
               </div>

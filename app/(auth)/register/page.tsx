@@ -21,7 +21,6 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   const [name, setName] = useState("");
-  const [loginId, setLoginId] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [role, setRole] = useState<Role | "">("");
@@ -39,11 +38,11 @@ export default function RegisterPage() {
     e.preventDefault();
     if (!role) { toast.error("역할을 선택해주세요"); return; }
 
-    const idError = validateId(loginId);
+    const idError = validateId(name);
     if (idError) { toast.error(idError); return; }
 
-    if (password.length < 4) {
-      toast.error("비밀번호는 4자리 이상이어야 합니다");
+    if (!/^\d{4,}$/.test(password)) {
+      toast.error("비밀번호는 숫자 4자리 이상이어야 합니다");
       return;
     }
 
@@ -54,7 +53,7 @@ export default function RegisterPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: idToEmail(loginId),
+          email: idToEmail(name),
           password,
           name,
           phone: phone.replace(/[^0-9]/g, ""),
@@ -152,34 +151,20 @@ export default function RegisterPage() {
                 </div>
               )}
 
-              {/* 이름 */}
+              {/* 이름 (아이디로 사용) */}
               <div className="space-y-2">
-                <Label htmlFor="name" className="text-base font-medium">이름</Label>
+                <Label htmlFor="name" className="text-base font-medium">이름 (아이디)</Label>
                 <Input
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="실명을 입력하세요"
                   required
-                  className="h-12 text-base"
-                />
-              </div>
-
-              {/* 아이디 */}
-              <div className="space-y-2">
-                <Label htmlFor="loginId" className="text-base font-medium">아이디</Label>
-                <Input
-                  id="loginId"
-                  type="text"
-                  value={loginId}
-                  onChange={(e) => setLoginId(e.target.value)}
-                  placeholder="아이디를 입력하세요"
-                  required
                   autoComplete="username"
                   className="h-12 text-base"
                 />
                 <p className="text-xs text-muted-foreground">
-                  영문/숫자 4자 이상, 또는 한글 2자 이상
+                  이름이 로그인 아이디로 사용됩니다
                 </p>
               </div>
 
@@ -191,11 +176,16 @@ export default function RegisterPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="4자리 이상"
+                  placeholder="숫자 4자리 이상"
                   required
                   minLength={4}
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   className="h-12 text-base"
                 />
+                <p className="text-xs text-muted-foreground">
+                  숫자만 입력, 4자리 이상
+                </p>
               </div>
 
               {/* 전화번호 */}
