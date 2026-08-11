@@ -205,6 +205,13 @@ export const SUN_DIRECTORY: SunEntry[] = [
     sunNumber: 44, sunLeader: "한미영", missionId: 12,
     members: ["김민준","이숙경","최요환","하순임","장복주","유수진","임재생"],
   },
+
+  // ─────────────── 브릿지선교회 (목자: 김의현·홍혜진 부부, 순장·선교회장 없음) ───────────────
+  // 목자 2명이 순장 역할로 순보고서를 직접 제출. 명단은 교적부(members) 기준.
+  {
+    sunNumber: 45, sunLeader: "김의현·홍혜진", missionId: 13,
+    members: ["권미정","김래민","김래온","김선규","김성민B","김수련","김시은","김예성","김은지","김주경","김형교","남로이","남충헌","문기혁","박다영","박용욱B","박유리","박정아B","유소영","이민지B","이상민D","이시우B","이지현","정유솔","정현","홍명훈"],
+  },
 ];
 
 export const getSunEntry = (sunNumber: number): SunEntry | undefined =>
@@ -216,5 +223,16 @@ export const getSunsByMission = (missionId: number): SunEntry[] =>
 export const getSunMembers = (sunNumber: number): string[] =>
   getSunEntry(sunNumber)?.members ?? [];
 
-export const MISSION_COUNT = 12;
-export const SUN_COUNT = 44;
+export const MISSION_COUNT = 13;         // 브릿지선교회(13) 포함
+export const SUN_COUNT = 45;             // 브릿지(45순) 포함
+
+// 브릿지선교회: 순장·선교회장 없이 목자 부부가 순보고서를 직접 제출하는 특수 편성
+export const BRIDGE_MISSION_ID = 13;
+export const BRIDGE_SUN_NUMBER = 45;
+
+// 선교회보고서 제출 대상 수 (브릿지선교회는 선교회장이 없어 제외)
+export const MISSION_REPORT_COUNT = 12;
+
+// 선교회 표시 이름 (브릿지선교회는 번호 대신 이름 표기)
+export const getMissionName = (missionId: number): string =>
+  missionId === BRIDGE_MISSION_ID ? "브릿지선교회" : `${missionId}선교회`;

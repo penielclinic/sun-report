@@ -10,11 +10,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Image from "next/image";
 import { toast } from "sonner";
-import { SUN_DIRECTORY } from "@/lib/constants/sun-directory";
+import { SUN_DIRECTORY, BRIDGE_SUN_NUMBER, getMissionName } from "@/lib/constants/sun-directory";
 import type { Role } from "@/types/database";
 import { idToEmail, validateId } from "@/lib/utils/id-to-email";
 
-const MISSION_NAMES = ["1선교회", "2선교회", "3선교회", "4선교회", "5선교회", "6선교회", "7선교회", "8선교회", "9선교회", "10선교회", "11선교회", "12선교회"];
+const MISSION_NAMES = ["1선교회", "2선교회", "3선교회", "4선교회", "5선교회", "6선교회", "7선교회", "8선교회", "9선교회", "10선교회", "11선교회", "12선교회", "브릿지선교회"];
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -27,11 +27,11 @@ export default function RegisterPage() {
   const [sunNumber, setSunNumber] = useState<string>("");
   const [missionId, setMissionId] = useState<string>("");
 
-  // 순장 선택 시 이름 자동 입력
+  // 순장 선택 시 이름 자동 입력 (브릿지선교회는 목자 2명이라 자동 입력 생략)
   function handleSunSelect(val: string | null) {
     setSunNumber(val ?? "");
     const entry = val ? SUN_DIRECTORY.find((s) => s.sunNumber === parseInt(val)) : undefined;
-    if (entry && !name) setName(entry.sunLeader);
+    if (entry && !name && entry.sunNumber !== BRIDGE_SUN_NUMBER) setName(entry.sunLeader);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -121,14 +121,16 @@ export default function RegisterPage() {
                     <SelectContent>
                       {SUN_DIRECTORY.map((s) => (
                         <SelectItem key={s.sunNumber} value={String(s.sunNumber)}>
-                          {s.sunNumber}순 — {s.sunLeader}
+                          {s.sunNumber === BRIDGE_SUN_NUMBER
+                            ? `브릿지선교회 — ${s.sunLeader} (목자)`
+                            : `${s.sunNumber}순 — ${s.sunLeader}`}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   {selectedSun && (
                     <p className="text-xs text-muted-foreground">
-                      소속: {selectedSun.missionId}선교회
+                      소속: {getMissionName(selectedSun.missionId)}
                     </p>
                   )}
                 </div>

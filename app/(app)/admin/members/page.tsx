@@ -24,7 +24,7 @@ export default async function MembersPage() {
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-primary">순원 현황</h2>
         <p className="text-sm text-muted-foreground">
-          전체 44순 · {totalMembers}명
+          전체 45순 · {totalMembers}명
         </p>
       </div>
       <MembersManager />

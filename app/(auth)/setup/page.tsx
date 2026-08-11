@@ -13,7 +13,7 @@ import { createClient } from "@/lib/supabase/client";
 import { SUN_DIRECTORY } from "@/lib/constants/sun-directory";
 import type { Role } from "@/types/database";
 
-const MISSION_NAMES = ["1선교회","2선교회","3선교회","4선교회","5선교회","6선교회","7선교회","8선교회","9선교회","10선교회","11선교회","12선교회"];
+const MISSION_NAMES = ["1선교회","2선교회","3선교회","4선교회","5선교회","6선교회","7선교회","8선교회","9선교회","10선교회","11선교회","12선교회","브릿지선교회"];
 
 export default function SetupPage() {
   const router = useRouter();
@@ -123,7 +123,9 @@ export default function SetupPage() {
                     <SelectContent>
                       {SUN_DIRECTORY.map((s) => (
                         <SelectItem key={s.sunNumber} value={String(s.sunNumber)}>
-                          {s.sunNumber}순 — {s.sunLeader}
+                          {s.missionId === 13
+                            ? `브릿지선교회 — ${s.sunLeader} (목자)`
+                            : `${s.sunNumber}순 — ${s.sunLeader}`}
                         </SelectItem>
                       ))}
                     </SelectContent>

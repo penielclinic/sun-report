@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FileDown, Loader2 } from "lucide-react";
+import { getMissionName } from "@/lib/constants/sun-directory";
 
 type Period = "week" | "month" | "year";
 
@@ -50,7 +51,7 @@ function buildPrintHtml(data: PdfData, periodLabel: string): string {
 
   const missionHtml = missionTable.map((m) => `
     <tr>
-      <td class="center">${m.id}선교회</td>
+      <td class="center">${getMissionName(m.id)}</td>
       <td class="center">${m.sunCount}순</td>
       <td class="center">${m.attend}명</td>
       <td class="center">${m.bible}장</td>

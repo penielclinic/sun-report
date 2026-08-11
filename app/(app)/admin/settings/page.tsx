@@ -23,7 +23,7 @@ export default async function SettingsPage() {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-base">44순 편성표</CardTitle>
+          <CardTitle className="text-base">순 편성표</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">

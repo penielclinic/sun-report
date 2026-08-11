@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, XCircle, Clock } from "lucide-react";
-import { SUN_DIRECTORY } from "@/lib/constants/sun-directory";
+import { SUN_DIRECTORY, MISSION_COUNT, SUN_COUNT, getMissionName } from "@/lib/constants/sun-directory";
 import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
 import { OverviewDatePicker } from "@/components/admin/OverviewDatePicker";
 import { OverviewTrendChart } from "@/components/admin/OverviewTrendChart";
@@ -84,8 +84,8 @@ export default async function OverviewPage({
     sun6Map.set(sunNum, e);
   }
 
-  // ── 12선교회별 집계
-  const missionStats: MissionStat[] = Array.from({ length: 12 }, (_, i) => {
+  // ── 선교회별 집계 (브릿지선교회 포함)
+  const missionStats: MissionStat[] = Array.from({ length: MISSION_COUNT }, (_, i) => {
     const missionNum = i + 1;
     const missionSuns = SUN_DIRECTORY.filter((s) => s.missionId === missionNum);
     const submitted = missionSuns.filter((s) => reportMap.get(s.sunNumber)?.status === "submitted").length;
@@ -178,10 +178,10 @@ export default async function OverviewPage({
         </CardContent>
       </Card>
 
-      {/* 12선교회별 현황 그리드 */}
+      {/* 선교회별 현황 그리드 */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm">12선교회 현황</CardTitle>
+          <CardTitle className="text-sm">선교회 현황</CardTitle>
         </CardHeader>
         <CardContent className="pb-3">
           <div className="grid grid-cols-3 gap-2">
@@ -195,7 +195,7 @@ export default async function OverviewPage({
                   : "border-gray-200 bg-gray-50";
               return (
                 <div key={m.missionNum} className={`rounded-lg border p-2 ${color}`}>
-                  <p className="text-[11px] font-semibold text-primary">{m.missionNum}선교회</p>
+                  <p className="text-[11px] font-semibold text-primary">{getMissionName(m.missionNum)}</p>
                   <p className="text-base font-bold text-primary leading-tight mt-0.5">
                     {m.submitted}
                     <span className="text-xs font-normal text-muted-foreground">/{m.total}</span>
@@ -214,10 +214,10 @@ export default async function OverviewPage({
         </CardContent>
       </Card>
 
-      {/* 44순 상세 테이블 */}
+      {/* 순별 상세 테이블 */}
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-sm">44순 제출 현황</CardTitle>
+          <CardTitle className="text-sm">순별 제출 현황</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <div className="overflow-x-auto">
@@ -276,7 +276,7 @@ export default async function OverviewPage({
                   <td className="px-1 py-2 text-center text-xs text-green-600">{attend6[4].val}</td>
                   <td className="px-1 py-2 text-center text-xs text-orange-500">{attend6[5].val}</td>
                   <td className="px-2 py-2 text-center text-xs text-muted-foreground">
-                    {submittedCount}/44
+                    {submittedCount}/{SUN_COUNT}
                   </td>
                 </tr>
               </tfoot>

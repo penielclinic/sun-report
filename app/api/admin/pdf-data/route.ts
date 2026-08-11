@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
+import { MISSION_COUNT } from "@/lib/constants/sun-directory";
 
 function getDateRange(period: string) {
   const now = new Date();
@@ -86,7 +87,7 @@ export async function GET(req: NextRequest) {
 
   // ⑤ 선교회별 집계
   const missionMap = new Map<number, { attend: number; bible: number; offering: number; sunCount: number }>();
-  for (let i = 1; i <= 12; i++) missionMap.set(i, { attend: 0, bible: 0, offering: 0, sunCount: 0 });
+  for (let i = 1; i <= MISSION_COUNT; i++) missionMap.set(i, { attend: 0, bible: 0, offering: 0, sunCount: 0 });
   (sunReports ?? []).forEach((r) => {
     const e = missionMap.get(r.mission_id)!;
     e.attend += r.attend_total;

@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, Clock, AlertCircle, ChevronRight, ClipboardList, Users, Download, BarChart2, Trophy } from "lucide-react";
 import AdminDeleteButton from "@/components/dashboard/AdminDeleteButton";
 import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
-import { MISSION_COUNT, SUN_COUNT } from "@/lib/constants/sun-directory";
+import { MISSION_COUNT, SUN_COUNT, MISSION_REPORT_COUNT, BRIDGE_MISSION_ID, getMissionName } from "@/lib/constants/sun-directory";
 import { AdminPdfDownload } from "@/components/admin/AdminPdfDownload";
 
 export default async function AdminDashboard() {
@@ -88,7 +88,7 @@ export default async function AdminDashboard() {
             <p className="text-2xl font-bold text-primary mt-1">
               {submittedMissions.length}
               <span className="text-sm font-normal text-muted-foreground">
-                /{MISSION_COUNT}
+                /{MISSION_REPORT_COUNT}
               </span>
             </p>
           </CardContent>
@@ -204,7 +204,7 @@ export default async function AdminDashboard() {
                 <Users className="w-5 h-5 text-primary" />
                 <div>
                   <p className="font-medium text-sm">순원 현황</p>
-                  <p className="text-xs text-muted-foreground">44순 전체 순원 명단 조회 및 검색</p>
+                  <p className="text-xs text-muted-foreground">전체 순원 명단 조회 및 검색</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -250,11 +250,14 @@ export default async function AdminDashboard() {
                 const missionReport = missionMap.get(mId);
                 const suns = sunMapByMission.get(mId) ?? [];
                 const submitted = suns.filter((s) => s.status === "submitted").length;
+                // 브릿지선교회: 선교회장 없이 목자가 순보고서를 직접 제출 → 순보고 제출이 곧 완료
+                const isBridge = mId === BRIDGE_MISSION_ID;
+                const isDone = isBridge ? submitted > 0 : missionReport?.status === "submitted";
 
                 return (
                   <li key={mId} className="flex items-center justify-between px-6 py-3">
                     <div className="flex items-center gap-3">
-                      {missionReport?.status === "submitted" ? (
+                      {isDone ? (
                         <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
                       ) : submitted > 0 ? (
                         <Clock className="w-5 h-5 text-amber-400 flex-shrink-0" />
@@ -262,9 +265,11 @@ export default async function AdminDashboard() {
                         <AlertCircle className="w-5 h-5 text-gray-300 flex-shrink-0" />
                       )}
                       <div>
-                        <p className="text-sm font-medium">선교회 {mId}</p>
+                        <p className="text-sm font-medium">{getMissionName(mId)}</p>
                         <p className="text-xs text-muted-foreground">
-                          순보고 {submitted}/{suns.length > 0 ? suns.length : "?"}
+                          {isBridge
+                            ? `목자 직접보고 ${submitted}/1`
+                            : `순보고 ${submitted}/${suns.length > 0 ? suns.length : "?"}`}
                         </p>
                       </div>
                     </div>
@@ -272,12 +277,12 @@ export default async function AdminDashboard() {
                       <Badge
                         variant="secondary"
                         className={
-                          missionReport?.status === "submitted"
+                          isDone
                             ? "bg-green-100 text-green-800 text-xs"
                             : "text-xs"
                         }
                       >
-                        {missionReport?.status === "submitted"
+                        {isDone
                           ? "제출완료"
                           : missionReport?.status === "draft"
                             ? "임시저장"

@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { CheckCircle2, XCircle, Trash2, KeyRound, UserPlus, ChevronDown, ChevronUp } from "lucide-react";
-import { SUN_DIRECTORY } from "@/lib/constants/sun-directory";
+import { SUN_DIRECTORY, getMissionName } from "@/lib/constants/sun-directory";
 import type { Role, ProfileStatus } from "@/types/database";
 
 type UserRow = {
@@ -40,7 +40,7 @@ const STATUS_LABELS: Record<ProfileStatus, string> = {
   active: "활성",
   rejected: "거절됨",
 };
-const MISSION_NAMES = Array.from({ length: 12 }, (_, i) => `${i + 1}선교회`);
+const MISSION_NAMES = [...Array.from({ length: 12 }, (_, i) => `${i + 1}선교회`), "브릿지선교회"];
 
 interface Props {
   users: UserRow[];
@@ -268,7 +268,7 @@ export default function UsersManager({ users: initialUsers }: Props) {
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {u.email}
                     {u.role === "sun_leader" && u.sun_number && ` · ${u.sun_number}순`}
-                    {u.role === "mission_leader" && u.mission_id && ` · ${u.mission_id}선교회`}
+                    {u.role === "mission_leader" && u.mission_id && ` · ${getMissionName(u.mission_id)}`}
                     {u.phone && ` · ${u.phone}`}
                   </p>
                 </div>

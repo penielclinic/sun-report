@@ -6,6 +6,7 @@ import { Users, BookOpen, Heart, TrendingUp, Megaphone } from "lucide-react";
 import { StatisticsCharts } from "@/components/charts/StatisticsCharts";
 import { StatisticsDownloadButtons } from "@/components/charts/StatisticsDownloadButtons";
 import { AdminPdfDownload } from "@/components/admin/AdminPdfDownload";
+import { MISSION_COUNT, BRIDGE_MISSION_ID } from "@/lib/constants/sun-directory";
 
 export type PeriodData = {
   date: string;
@@ -162,8 +163,8 @@ export default async function StatisticsPage({
     .forEach((r) => {
       missionMap.set(r.mission_id, (missionMap.get(r.mission_id) ?? 0) + r.attend_total);
     });
-  const missionChartData = Array.from({ length: 12 }, (_, i) => ({
-    mission: `${i + 1}선`,
+  const missionChartData = Array.from({ length: MISSION_COUNT }, (_, i) => ({
+    mission: i + 1 === BRIDGE_MISSION_ID ? "브릿지" : `${i + 1}선`,
     attend: missionMap.get(i + 1) ?? 0,
   }));
 

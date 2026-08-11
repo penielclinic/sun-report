@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { FileDown, Loader2 } from "lucide-react";
 import { useState } from "react";
+import { getMissionName, SUN_COUNT } from "@/lib/constants/sun-directory";
 
 export interface MissionStat {
   missionNum: number;
@@ -35,7 +36,7 @@ function buildHtml(props: Props): string {
     .map(
       (m) => `
     <tr>
-      <td class="center">${m.missionNum}선교회</td>
+      <td class="center">${getMissionName(m.missionNum)}</td>
       <td class="center">${m.submitted} / ${m.total}</td>
       <td class="center">
         <div class="progress-wrap">
@@ -55,7 +56,7 @@ function buildHtml(props: Props): string {
     <tr>
       <td class="center">${r.sunNumber}순</td>
       <td>${r.sunLeader}</td>
-      <td class="center">${r.missionId}선교회</td>
+      <td class="center">${getMissionName(r.missionId)}</td>
       <td class="center">${
         r.status === "submitted"
           ? '<span class="badge green">제출</span>'
@@ -133,11 +134,11 @@ function buildHtml(props: Props): string {
 <div class="summary-row">
   <div class="summary-box">
     <div class="s-title">제출 순 수</div>
-    <div class="s-value">${totalSubmitted} / 44</div>
+    <div class="s-value">${totalSubmitted} / ${SUN_COUNT}</div>
   </div>
   <div class="summary-box">
     <div class="s-title">제출률</div>
-    <div class="s-value">${Math.round((totalSubmitted / 44) * 100)}%</div>
+    <div class="s-value">${Math.round((totalSubmitted / SUN_COUNT) * 100)}%</div>
   </div>
   <div class="summary-box">
     <div class="s-title">총 참석 인원</div>
@@ -161,7 +162,7 @@ function buildHtml(props: Props): string {
 </div>
 
 <div class="section">
-  <h3 class="section-title">44순 상세 현황</h3>
+  <h3 class="section-title">순별 상세 현황</h3>
   <table>
     <thead>
       <tr>

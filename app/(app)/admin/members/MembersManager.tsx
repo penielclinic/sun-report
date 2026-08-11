@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Users } from "lucide-react";
-import { SUN_DIRECTORY, getSunsByMission, type SunEntry } from "@/lib/constants/sun-directory";
+import { SUN_DIRECTORY, getSunsByMission, MISSION_COUNT, getMissionName, type SunEntry } from "@/lib/constants/sun-directory";
 
 export default function MembersManager() {
   const [search, setSearch] = useState("");
@@ -73,9 +73,9 @@ export default function MembersManager() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">전체 선교회</SelectItem>
-                {Array.from({ length: 12 }, (_, i) => (
+                {Array.from({ length: MISSION_COUNT }, (_, i) => (
                   <SelectItem key={i + 1} value={String(i + 1)}>
-                    {i + 1}선교회
+                    {getMissionName(i + 1)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -120,7 +120,7 @@ export default function MembersManager() {
                 </CardTitle>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline" className="text-xs">
-                    {entry.missionId}선교회
+                    {getMissionName(entry.missionId)}
                   </Badge>
                   <Badge variant="secondary" className="text-xs gap-1">
                     <Users className="w-3 h-3" />
