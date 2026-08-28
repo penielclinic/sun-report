@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Clock, AlertCircle, ChevronRight, ClipboardList, Users, Download, BarChart2, Trophy } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, ChevronRight, ClipboardList, Users, Download, BarChart2, Trophy, HelpCircle } from "lucide-react";
 import AdminDeleteButton from "@/components/dashboard/AdminDeleteButton";
 import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
 import { MISSION_COUNT, SUN_COUNT, MISSION_REPORT_COUNT, BRIDGE_MISSION_ID, getMissionName } from "@/lib/constants/sun-directory";
@@ -223,6 +223,24 @@ export default async function AdminDashboard() {
                 <div>
                   <p className="font-medium text-sm">특별보고 관리</p>
                   <p className="text-xs text-muted-foreground">질병·재정·인간관계 등 항목별 진행상황 관리</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* 사용설명서 바로가기 */}
+      <Link href="/guide">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer border-primary/20">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <HelpCircle className="w-5 h-5 text-primary" />
+                <div>
+                  <p className="font-medium text-sm">사용설명서</p>
+                  <p className="text-xs text-muted-foreground">순장·선교회장·담임목사 역할별 이용 안내</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />

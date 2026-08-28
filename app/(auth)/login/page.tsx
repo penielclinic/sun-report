@@ -136,6 +136,12 @@ export default function LoginPage() {
             회원가입
           </Link>
         </p>
+        <p className="text-center text-sm text-muted-foreground mt-2">
+          앱이 처음이신가요?{" "}
+          <Link href="/guide" className="text-[#C9A84C] font-medium underline underline-offset-2">
+            사용설명서 보기
+          </Link>
+        </p>
       </div>
     </div>
   );

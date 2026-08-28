@@ -6,7 +6,7 @@ import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LogOut, LayoutDashboard, FileText, Bell, Send, BookOpen, HeartHandshake } from "lucide-react";
+import { LogOut, LayoutDashboard, FileText, Bell, Send, BookOpen, HeartHandshake, HelpCircle } from "lucide-react";
 import type { Profile } from "@/types/database";
 
 const ROLE_LABEL: Record<string, string> = {
@@ -115,6 +115,21 @@ export default function AppNav({ profile }: { profile: Profile }) {
                 <Link href="/report/sun/new">
                   <FileText className="w-5 h-5" />
                   <span className="text-[10px] leading-tight">보고서</span>
+                </Link>
+              </Button>
+            )}
+
+            {/* 순장·선교회장: 사용설명서 */}
+            {profile.role !== "pastor" && (
+              <Button
+                variant="ghost"
+                size="sm"
+                asChild
+                className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-2"
+              >
+                <Link href="/guide">
+                  <HelpCircle className="w-5 h-5" />
+                  <span className="text-[10px] leading-tight">설명서</span>
                 </Link>
               </Button>
             )}
