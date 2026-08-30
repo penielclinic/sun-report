@@ -189,7 +189,7 @@ export default function SunReportForm({
   const attendCounts = ATTEND_COLS.map(({ key }) =>
     members.filter((m) => m[key] === true).length
   );
-  const attendTotal = attendCounts[4]; // 순모임 참석 (attend_sun)
+  const attendTotal = attendCounts[2]; // 주일낮예배 참석 (attend_sun_day)
   const autoBible = members.reduce((s, m) => s + (m.bible_read || 0), 0);
 
   const [manualBible, setManualBible] = useState<string>(
