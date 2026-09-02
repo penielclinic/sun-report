@@ -44,6 +44,7 @@ export interface SunReport {
   worship_leader: string | null;
   attend_total: number;
   bible_chapters: number;
+  offering: number;
   special_note: string | null;
   status: ReportStatus;
   submitted_at: string | null;

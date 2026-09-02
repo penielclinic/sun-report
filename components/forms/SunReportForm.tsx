@@ -25,6 +25,8 @@ interface Props {
     report: SunReport;
     members: SunReportMember[];
   } | null;
+  /** 우리 순의 가장 최근 제출 보고서 순원 명단 (새 보고서 작성 시 기본 명단으로 사용) */
+  previousMembers?: string[] | null;
 }
 
 type MemberRow = {
@@ -95,6 +97,7 @@ export default function SunReportForm({
   reportDate,
   reportId,
   initialData,
+  previousMembers,
 }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
@@ -139,6 +142,11 @@ export default function SunReportForm({
   const [specialNote, setSpecialNote] = useState(initialData?.report.special_note ?? "");
 
   const defaultMembers = (): MemberRow[] => {
+    // 지난 주 실제 제출 명단이 있으면 그걸 기본값으로 사용 (새가족 추가분 유지),
+    // 없으면(첫 작성) 편성표(sun-directory.ts) 정적 명단으로 시작
+    if (previousMembers && previousMembers.length > 0) {
+      return previousMembers.map((name) => ({ ...EMPTY_MEMBER(), member_name: name }));
+    }
     const names = getSunMembers(profile.sun_number!);
     const allNames = [profile.name, ...names];
     return allNames.map((name) => ({ ...EMPTY_MEMBER(), member_name: name }));
@@ -199,6 +207,10 @@ export default function SunReportForm({
   );
   const bibleChapters = manualBible !== "" ? parseInt(manualBible) || 0 : autoBible;
 
+  const [offering, setOffering] = useState<string>(
+    initialData?.report.offering ? initialData.report.offering.toString() : ""
+  );
+
   async function saveReport(status: "draft" | "submitted") {
     if (status === "draft") setSaving(true);
     else setSubmitting(true);
@@ -214,6 +226,7 @@ export default function SunReportForm({
         worship_leader: worshipLeader || null,
         attend_total: attendTotal,
         bible_chapters: bibleChapters,
+        offering: parseInt(offering) || 0,
         special_note: specialNote || null,
         status,
         submitted_at: status === "submitted" ? new Date().toISOString() : null,
@@ -363,6 +376,22 @@ export default function SunReportForm({
               className="h-11 text-base"
               min={0}
             />
+          </div>
+
+          <div className="space-y-1">
+            <Label className="text-base">헌금 (원)</Label>
+            <Input
+              type="number"
+              inputMode="numeric"
+              value={offering}
+              onChange={(e) => setOffering(e.target.value)}
+              placeholder="0"
+              className="h-11 text-base"
+              min={0}
+            />
+            <p className="text-xs text-muted-foreground">
+              개인별 금액은 기록하지 않습니다 — 이번 주 우리 순 헌금 총액만 입력해주세요
+            </p>
           </div>
         </CardContent>
       </Card>

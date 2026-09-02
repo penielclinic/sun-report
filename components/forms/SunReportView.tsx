@@ -118,9 +118,10 @@ export default function SunReportView({
                 </div>
               ))}
             </div>
-            <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-              <span>순모임 참석 <strong className="text-primary">{report.attend_total}명</strong></span>
+            <div className="flex gap-4 mt-2 text-xs text-muted-foreground flex-wrap">
+              <span>주일낮 참석 <strong className="text-primary">{report.attend_total}명</strong></span>
               <span>성경 <strong className="text-primary">{report.bible_chapters}장</strong></span>
+              <span>헌금 <strong className="text-primary">{(report.offering ?? 0).toLocaleString()}원</strong></span>
             </div>
           </div>
         </CardContent>

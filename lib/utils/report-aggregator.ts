@@ -9,6 +9,7 @@ export function aggregateSunReports(reports: SunReport[]) {
     total_sun: submitted.length,
     total_attend: submitted.reduce((sum, r) => sum + r.attend_total, 0),
     total_bible: submitted.reduce((sum, r) => sum + r.bible_chapters, 0),
+    total_offering: submitted.reduce((sum, r) => sum + (r.offering || 0), 0),
   };
 }
 

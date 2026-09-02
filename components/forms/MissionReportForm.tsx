@@ -32,6 +32,7 @@ interface Props {
     total_sun: number;
     total_attend: number;
     total_bible: number;
+    total_offering: number;
   };
   sunReports: SunReportWithMembers[];
   initialSpecialItems?: SpecialReportItem[];
@@ -59,7 +60,11 @@ export default function MissionReportForm({
   const [expandedSun, setExpandedSun] = useState<string | null>(null);
 
   const [totalOffering, setTotalOffering] = useState(
-    initialData?.total_offering?.toString() ?? ""
+    initialData?.total_offering
+      ? initialData.total_offering.toString()
+      : aggregated.total_offering
+        ? aggregated.total_offering.toString()
+        : ""
   );
 
   const [specialItems, setSpecialItems] = useState<SpecialItemDraft[]>(
@@ -264,6 +269,7 @@ export default function MissionReportForm({
                     <div className="flex gap-2 text-xs text-muted-foreground">
                       <span>참석 {sr.attend_total}명</span>
                       <span>성경 {sr.bible_chapters}장</span>
+                      <span>헌금 {(sr.offering ?? 0).toLocaleString()}원</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -358,7 +364,13 @@ export default function MissionReportForm({
       <Card>
         <CardHeader className="pb-3">
           <CardTitle className="text-base">헌금 현황</CardTitle>
-          <p className="text-xs text-muted-foreground">개인별 금액 비공개 — 선교회 총액만 입력</p>
+          <p className="text-xs text-muted-foreground">
+            개인별 금액 비공개 — 순보고서 헌금 합계
+            {aggregated.total_offering > 0 && (
+              <> (<strong className="text-primary">{aggregated.total_offering.toLocaleString()}원</strong>)</>
+            )}
+            {" "}가 자동으로 채워집니다. 다르면 직접 수정하세요.
+          </p>
         </CardHeader>
         <CardContent>
           <div className="space-y-1">
