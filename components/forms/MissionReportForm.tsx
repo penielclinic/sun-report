@@ -14,12 +14,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "sonner";
 import { Save, Send, ChevronLeft, ChevronDown, ChevronUp, PlusCircle, Trash2 } from "lucide-react";
 import { MissionReportPrintPanel } from "@/components/forms/MissionReportPrintPanel";
+import MissionReportComments from "@/components/forms/MissionReportComments";
 import type {
   Profile,
   MissionReport,
   SunReportWithMembers,
   SpecialReportItem,
   SpecialCategory,
+  MissionReportComment,
 } from "@/types/database";
 import { SPECIAL_CATEGORIES } from "@/types/database";
 
@@ -37,6 +39,9 @@ interface Props {
   sunReports: SunReportWithMembers[];
   initialSpecialItems?: SpecialReportItem[];
   readonly?: boolean;
+  comments?: MissionReportComment[];
+  currentUserId?: string;
+  canComment?: boolean;
 }
 
 type SpecialItemDraft = {
@@ -53,6 +58,9 @@ export default function MissionReportForm({
   sunReports,
   initialSpecialItems = [],
   readonly = false,
+  comments = [],
+  currentUserId,
+  canComment = false,
 }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
@@ -455,6 +463,16 @@ export default function MissionReportForm({
           )}
         </CardContent>
       </Card>
+
+      {/* 답글 — 기존 보고서(reportId 존재)에만 표시 */}
+      {reportId && currentUserId && (
+        <MissionReportComments
+          reportId={reportId}
+          initialComments={comments}
+          currentUserId={currentUserId}
+          canComment={canComment}
+        />
+      )}
 
       {/* PDF 저장 + 순원 성경 현황 — 항상 표시 */}
       <MissionReportPrintPanel

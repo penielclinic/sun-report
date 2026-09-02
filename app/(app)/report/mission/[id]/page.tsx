@@ -52,6 +52,15 @@ export default async function MissionReportDetailPage({
     .eq("mission_report_id", id)
     .order("created_at");
 
+  const { data: comments } = await supabase
+    .from("mission_report_comments")
+    .select("*")
+    .eq("report_id", id)
+    .order("created_at");
+
+  // 답글 작성 가능: 보고서 작성자 본인(선교회장), 담임목사
+  const canComment = report.created_by === user.id || profile.role === "pastor";
+
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-bold text-primary">
@@ -66,6 +75,9 @@ export default async function MissionReportDetailPage({
         sunReports={(sunReports ?? []) as SunReportWithMembers[]}
         initialSpecialItems={(specialItems ?? []) as SpecialReportItem[]}
         readonly={!canEdit}
+        comments={comments ?? []}
+        currentUserId={user.id}
+        canComment={canComment}
       />
     </div>
   );
