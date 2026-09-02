@@ -83,6 +83,16 @@ export interface MissionReport {
   created_at: string;
 }
 
+export interface SunReportComment {
+  id: string;
+  report_id: string;
+  author_id: string;
+  author_name: string;
+  author_role: Role;
+  content: string;
+  created_at: string;
+}
+
 export interface SunReportWithMembers extends SunReport {
   sun_report_members: SunReportMember[];
 }

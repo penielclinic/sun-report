@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import SunReportForm from "@/components/forms/SunReportForm";
 import SunReportView from "@/components/forms/SunReportView";
+import SunReportComments from "@/components/forms/SunReportComments";
 
 export default async function SunReportDetailPage({
   params,
@@ -35,11 +36,23 @@ export default async function SunReportDetailPage({
     .eq("report_id", id)
     .order("member_name");
 
+  const { data: comments } = await supabase
+    .from("sun_report_comments")
+    .select("*")
+    .eq("report_id", id)
+    .order("created_at");
+
   // 순장 본인이고 draft인 경우에만 편집 가능
   const canEdit =
     profile.role === "sun_leader" &&
     report.created_by === user.id &&
     report.status === "draft";
+
+  // 답글 작성 가능: 보고서 작성자 본인(순장), 소속 선교회장, 담임목사
+  const canComment =
+    report.created_by === user.id ||
+    profile.role === "pastor" ||
+    (profile.role === "mission_leader" && profile.mission_id === report.mission_id);
 
   return (
     <div className="space-y-4">
@@ -55,7 +68,15 @@ export default async function SunReportDetailPage({
           initialData={{ report, members: members ?? [] }}
         />
       ) : (
-        <SunReportView report={report} members={members ?? []} profile={profile} />
+        <>
+          <SunReportView report={report} members={members ?? []} profile={profile} />
+          <SunReportComments
+            reportId={id}
+            initialComments={comments ?? []}
+            currentUserId={user.id}
+            canComment={canComment}
+          />
+        </>
       )}
     </div>
   );

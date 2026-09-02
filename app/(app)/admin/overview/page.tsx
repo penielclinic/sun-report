@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, XCircle, Clock } from "lucide-react";
 import { SUN_DIRECTORY, MISSION_COUNT, SUN_COUNT, getMissionName } from "@/lib/constants/sun-directory";
@@ -242,7 +243,15 @@ export default async function OverviewPage({
                   const hasData = report?.status === "submitted" && s6;
                   return (
                     <tr key={entry.sunNumber} className="border-b last:border-0">
-                      <td className="px-3 py-2 font-medium whitespace-nowrap">{entry.sunNumber}순</td>
+                      <td className="px-3 py-2 font-medium whitespace-nowrap">
+                        {report ? (
+                          <Link href={`/report/sun/${report.id}`} className="text-primary underline underline-offset-2">
+                            {entry.sunNumber}순
+                          </Link>
+                        ) : (
+                          `${entry.sunNumber}순`
+                        )}
+                      </td>
                       <td className="px-2 py-2 text-muted-foreground whitespace-nowrap">{entry.sunLeader}</td>
                       <td className="px-1 py-2 text-center text-indigo-600 font-medium">{hasData ? s6.samil : "−"}</td>
                       <td className="px-1 py-2 text-center text-purple-600 font-medium">{hasData ? s6.friday : "−"}</td>
