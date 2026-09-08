@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Clock, AlertCircle, ChevronRight, ClipboardList, Users, Download, BarChart2, Trophy, HelpCircle } from "lucide-react";
+import { CheckCircle2, Clock, AlertCircle, ChevronRight, ClipboardList, Users, Download, BarChart2, Trophy, HelpCircle, Share2 } from "lucide-react";
 import AdminDeleteButton from "@/components/dashboard/AdminDeleteButton";
 import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
 import { MISSION_COUNT, SUN_COUNT, MISSION_REPORT_COUNT, BRIDGE_MISSION_ID, getMissionName } from "@/lib/constants/sun-directory";
@@ -136,6 +136,26 @@ export default async function AdminDashboard() {
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground" />
+            </div>
+          </CardContent>
+        </Card>
+      </Link>
+
+      {/* 공개 통계 — 로그인 없이 누구나 볼 수 있는 페이지로 이동/공유 */}
+      <Link href="/public-stats" target="_blank">
+        <Card className="hover:shadow-md transition-shadow cursor-pointer border-0 overflow-hidden">
+          <CardContent className="p-0">
+            <div className="flex items-center justify-between px-4 py-4 bg-gradient-to-r from-[#1B3A6B] via-[#3A5A9B] to-[#C9A84C]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">
+                  <Share2 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <p className="font-medium text-sm text-white">📊 공개 통계 (누구나 열람 가능)</p>
+                  <p className="text-xs text-white/85">헌금 제외 · 성도들과 링크 공유 가능</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-white/80" />
             </div>
           </CardContent>
         </Card>
