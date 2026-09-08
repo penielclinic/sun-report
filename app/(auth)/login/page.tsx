@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { BarChart3 } from "lucide-react";
 import { idToEmail, validateId } from "@/lib/utils/id-to-email";
 
 const SAVED_ID_KEY = "sunbogo_saved_id";
@@ -142,6 +143,25 @@ export default function LoginPage() {
             사용설명서 보기
           </Link>
         </p>
+
+        {/* 공개 통계 — 로그인 없이 누구나 열람 가능 */}
+        <Link href="/public-stats" className="block mt-6">
+          <div className="relative overflow-hidden rounded-2xl p-4 shadow-md hover:shadow-lg transition-shadow bg-gradient-to-r from-[#1B3A6B] via-[#3A5A9B] to-[#C9A84C]">
+            <div className="flex items-center gap-3">
+              <div className="w-11 h-11 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center flex-shrink-0">
+                <BarChart3 className="w-6 h-6 text-white" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-white font-bold text-base leading-tight">
+                  📊 전체 통계 현황 보기
+                </p>
+                <p className="text-white/85 text-xs mt-0.5">
+                  출석 · 성경읽기 · 전도 현황 — 로그인 없이 누구나 볼 수 있어요
+                </p>
+              </div>
+            </div>
+          </div>
+        </Link>
       </div>
     </div>
   );

@@ -32,7 +32,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const isApiRoute = pathname.startsWith("/api/");
   const isAuthPage = pathname.startsWith("/login") || pathname.startsWith("/register");
-  const isPublic = pathname === "/" || pathname.startsWith("/pending") || pathname.startsWith("/guide");
+  const isPublic = pathname === "/" || pathname.startsWith("/pending") || pathname.startsWith("/guide") || pathname.startsWith("/public-stats");
 
   // API 경로는 인증 체크 제외 (각 라우트에서 자체 처리)
   if (isApiRoute) return supabaseResponse;
