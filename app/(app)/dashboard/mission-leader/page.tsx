@@ -147,7 +147,7 @@ export default async function MissionLeaderDashboard({
                   }
                 >
                   {missionReport ? (
-                    missionReport.status === "submitted" ? "보기" : "이어서 작성"
+                    missionReport.status === "submitted" ? "수정" : "이어서 작성"
                   ) : (
                     <>
                       <PlusCircle className="w-4 h-4 mr-1" />

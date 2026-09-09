@@ -30,11 +30,10 @@ export default async function MissionReportDetailPage({
     .single();
   if (!report) notFound();
 
-  // 선교회장이 본인 선교회 보고서이고 draft인 경우만 편집
+  // 선교회장 본인 보고서는 제출 후에도 수정·재제출 가능
   const canEdit =
     profile.role === "mission_leader" &&
-    report.created_by === user.id &&
-    report.status === "draft";
+    report.created_by === user.id;
 
   // 집계 재계산 (순원 포함)
   const { data: sunReports } = await supabase

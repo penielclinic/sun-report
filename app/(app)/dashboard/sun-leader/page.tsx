@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PlusCircle, Clock, CheckCircle2, ChevronRight } from "lucide-react";
 import SunReportList from "@/components/dashboard/SunReportList";
 import PastorMessageCard from "@/components/dashboard/PastorMessageCard";
+import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
 
 export default async function SunLeaderDashboard() {
   const supabase = await createClient();
@@ -29,15 +30,10 @@ export default async function SunLeaderDashboard() {
     .order("report_date", { ascending: false })
     .limit(5);
 
-  const latestReport = reports?.[0];
-  const hasThisWeek =
-    latestReport &&
-    latestReport.report_date >=
-      new Date(
-        Date.now() - 7 * 24 * 60 * 60 * 1000
-      )
-        .toISOString()
-        .split("T")[0];
+  const thisSunday = formatDate(getThisSunday());
+  const thisWeekReport = reports?.find((r) => r.report_date === thisSunday);
+  const latestReport = thisWeekReport ?? reports?.[0];
+  const hasThisWeek = !!thisWeekReport;
 
   return (
     <div className="space-y-6">
@@ -84,21 +80,26 @@ export default async function SunLeaderDashboard() {
         </CardContent>
       </Card>
 
-      {/* 보고서 작성 버튼 */}
-      {(!hasThisWeek || latestReport?.status === "draft") && (
-        <Button
-          asChild
-          size="lg"
-          className="w-full h-16 text-lg font-semibold bg-primary hover:bg-primary/90"
-        >
-          <Link href={hasThisWeek && latestReport?.status === "draft" ? `/report/sun/${latestReport.id}` : "/report/sun/new"}>
-            <PlusCircle className="w-5 h-5 mr-2" />
-            {hasThisWeek && latestReport?.status === "draft"
+      {/* 보고서 작성/수정 버튼 — 제출 후에도 수정·재제출 가능 */}
+      <Button
+        asChild
+        size="lg"
+        variant={hasThisWeek && latestReport?.status === "submitted" ? "outline" : "default"}
+        className={`w-full h-16 text-lg font-semibold ${
+          hasThisWeek && latestReport?.status === "submitted"
+            ? "border-primary/40 text-primary"
+            : "bg-primary hover:bg-primary/90"
+        }`}
+      >
+        <Link href={hasThisWeek ? `/report/sun/${latestReport!.id}` : "/report/sun/new"}>
+          <PlusCircle className="w-5 h-5 mr-2" />
+          {!hasThisWeek
+            ? "이번 주 순보고서 작성"
+            : latestReport?.status === "draft"
               ? "작성 중인 보고서 이어서 작성"
-              : "이번 주 순보고서 작성"}
-          </Link>
-        </Button>
-      )}
+              : "제출한 보고서 수정하기"}
+        </Link>
+      </Button>
 
       {/* 목사님 메시지 */}
       <PastorMessageCard userId={user.id} />
