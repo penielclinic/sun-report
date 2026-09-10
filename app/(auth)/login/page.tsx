@@ -127,6 +127,11 @@ export default function LoginPage() {
               >
                 {loading ? "로그인 중..." : "로그인"}
               </Button>
+              <p className="text-center">
+                <Link href="/forgot-password" className="text-sm text-muted-foreground underline underline-offset-2">
+                  비밀번호를 잊으셨나요?
+                </Link>
+              </p>
             </form>
           </CardContent>
         </Card>

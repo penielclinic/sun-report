@@ -2,7 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createClient as createAdminClient } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 import UsersManager from "./UsersManager";
-import type { Profile } from "@/types/database";
+import PasswordRequestsPanel from "@/components/admin/PasswordRequestsPanel";
+import type { Profile, PasswordResetRequest } from "@/types/database";
 
 export default async function UsersAdminPage() {
   const supabase = await createClient();
@@ -20,6 +21,11 @@ export default async function UsersAdminPage() {
 
   const { data: profiles } = await admin.from("sunbogo_profiles").select("*").order("status").order("role");
   const { data: { users: authUsers } } = await admin.auth.admin.listUsers({ perPage: 500 });
+  const { data: pwRequests } = await admin
+    .from("password_reset_requests")
+    .select("*")
+    .eq("status", "pending")
+    .order("requested_at");
 
   // profile에 이메일 합치기
   const emailMap = new Map(authUsers.map((u) => [u.id, u.email ?? ""]));
@@ -34,6 +40,7 @@ export default async function UsersAdminPage() {
         <h2 className="text-xl font-bold text-primary">사용자 관리</h2>
         <p className="text-sm text-muted-foreground mt-1">회원가입 승인 및 계정 관리</p>
       </div>
+      <PasswordRequestsPanel requests={(pwRequests ?? []) as PasswordResetRequest[]} />
       <UsersManager users={usersWithEmail} />
     </div>
   );

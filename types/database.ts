@@ -103,6 +103,18 @@ export interface MissionReportComment {
   created_at: string;
 }
 
+export type PasswordResetStatus = "pending" | "approved" | "rejected";
+
+export interface PasswordResetRequest {
+  id: string;
+  profile_id: string;
+  name: string;
+  new_password: string | null;
+  status: PasswordResetStatus;
+  requested_at: string;
+  processed_at: string | null;
+}
+
 export interface SunReportWithMembers extends SunReport {
   sun_report_members: SunReportMember[];
 }
