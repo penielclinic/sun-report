@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
-import { BarChart3 } from "lucide-react";
+import { BarChart3, BookOpen } from "lucide-react";
 import { idToEmail, validateId } from "@/lib/utils/id-to-email";
 
 const SAVED_ID_KEY = "sunbogo_saved_id";
@@ -142,12 +142,25 @@ export default function LoginPage() {
             회원가입
           </Link>
         </p>
-        <p className="text-center text-sm text-muted-foreground mt-2">
-          앱이 처음이신가요?{" "}
-          <Link href="/guide" className="text-[#C9A84C] font-medium underline underline-offset-2">
-            사용설명서 보기
-          </Link>
-        </p>
+
+        {/* 사용설명서 — 크게, 눈에 잘 띄게 */}
+        <Link href="/guide" className="block mt-4">
+          <div className="relative overflow-hidden rounded-2xl p-5 shadow-md hover:shadow-lg transition-shadow bg-gradient-to-r from-[#C9A84C] to-[#B8933A]">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-white/25 backdrop-blur flex items-center justify-center flex-shrink-0">
+                <BookOpen className="w-8 h-8 text-white" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-white font-bold text-lg leading-tight">
+                  📖 사용설명서 보기
+                </p>
+                <p className="text-white/90 text-sm mt-1 leading-snug" style={{ wordBreak: "keep-all" }}>
+                  회원가입·로그인·비밀번호 안내, 순보고 작성법까지 처음이신 분은 꼭 확인해주세요
+                </p>
+              </div>
+            </div>
+          </div>
+        </Link>
 
         {/* 공개 통계 — 로그인 없이 누구나 열람 가능 */}
         <Link href="/public-stats" className="block mt-6">
