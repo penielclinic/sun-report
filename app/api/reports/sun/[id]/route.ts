@@ -40,7 +40,10 @@ export async function DELETE(
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   // 해당 날짜 선교회보고서가 submitted인지 확인
-  const { data: missionReport } = await supabase
+  // sun_leader는 sunbogo_mission_reports에 RLS 조회 권한이 없어(0 rows, 에러 없음)
+  // 반드시 admin 클라이언트로 확인해야 함 — 아니면 항상 "미제출"로 오판해 잠금이 무력화됨
+  const admin = adminClient();
+  const { data: missionReport } = await admin
     .from("sunbogo_mission_reports")
     .select("status")
     .eq("mission_id", report.mission_id)
@@ -52,8 +55,6 @@ export async function DELETE(
       { error: "이미 선교회 보고서가 제출되어 삭제할 수 없습니다." },
       { status: 409 }
     );
-
-  const admin = adminClient();
   await admin.from("sun_report_members").delete().eq("report_id", id);
   await admin.from("sun_reports").delete().eq("id", id);
 

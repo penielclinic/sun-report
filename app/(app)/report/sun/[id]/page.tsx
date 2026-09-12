@@ -4,6 +4,7 @@ import { redirect, notFound } from "next/navigation";
 import SunReportForm from "@/components/forms/SunReportForm";
 import SunReportView from "@/components/forms/SunReportView";
 import SunReportComments from "@/components/forms/SunReportComments";
+import DeleteSunReportButton from "@/components/forms/DeleteSunReportButton";
 
 function getAdminClient() {
   return createAdminClient(
@@ -79,13 +80,23 @@ export default async function SunReportDetailPage({
         {canEdit ? "순보고서 수정" : "순보고서 상세"}
       </h2>
       {canEdit ? (
-        <SunReportForm
-          profile={profile}
-          userId={user.id}
-          reportDate={report.report_date}
-          reportId={id}
-          initialData={{ report, members: members ?? [] }}
-        />
+        <>
+          {report.status === "submitted" && (
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-lg border border-border bg-muted/30 px-4 py-3">
+              <p className="text-sm text-muted-foreground" style={{ wordBreak: "keep-all" }}>
+                이미 제출한 보고서입니다. 수정 후 다시 제출하거나, 삭제한 뒤 새로 작성할 수 있습니다.
+              </p>
+              <DeleteSunReportButton reportId={id} />
+            </div>
+          )}
+          <SunReportForm
+            profile={profile}
+            userId={user.id}
+            reportDate={report.report_date}
+            reportId={id}
+            initialData={{ report, members: members ?? [] }}
+          />
+        </>
       ) : (
         <>
           {missionLocked && profile.role === "sun_leader" && report.created_by === user.id && (
