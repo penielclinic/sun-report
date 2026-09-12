@@ -46,10 +46,14 @@ export default async function NewSunReportPage() {
     if (lastReport) {
       const { data: lastMembers } = await admin
         .from("sun_report_members")
-        .select("member_name")
+        .select("member_name, attend_sun_day")
         .eq("report_id", lastReport.id)
         .order("member_name");
-      previousMembers = (lastMembers ?? []).map((m) => m.member_name);
+      // 지난주 주일낮예배 참석자를 목록 위쪽에 먼저 보여줘 순장이 빠르게 체크할 수 있도록 함.
+      // 이번 주 체크 상태는 모두 초기화된 채로 시작하며, 실제로 체크하면 그 결과에 따라 다시 정렬된다.
+      previousMembers = (lastMembers ?? [])
+        .sort((a, b) => (a.attend_sun_day ? 0 : 1) - (b.attend_sun_day ? 0 : 1))
+        .map((m) => m.member_name);
     }
   }
 
