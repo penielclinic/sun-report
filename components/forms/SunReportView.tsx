@@ -44,6 +44,13 @@ export default function SunReportView({
     members.filter((m) => m[key] === true).length
   );
 
+  // 주일낮예배 참석자를 위쪽에, 비참석자를 아래쪽에 표시
+  const sortedMembers = [...members].sort((a, b) => {
+    const aAttended = a.attend_sun_day ? 0 : 1;
+    const bAttended = b.attend_sun_day ? 0 : 1;
+    return aAttended - bAttended;
+  });
+
   const backHref =
     profile.role === "pastor"
       ? "/dashboard/admin"
@@ -132,6 +139,7 @@ export default function SunReportView({
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm">순원 출석 현황</CardTitle>
+            <p className="text-xs text-muted-foreground">주일낮예배 참석자가 위쪽에 표시됩니다</p>
           </CardHeader>
           <CardContent className="p-0">
             <div className="overflow-x-auto">
@@ -148,7 +156,7 @@ export default function SunReportView({
                   </tr>
                 </thead>
                 <tbody>
-                  {members.map((m) => (
+                  {sortedMembers.map((m) => (
                     <tr key={m.id} className="border-b last:border-0">
                       <td className="px-4 py-2 font-medium">{m.member_name}</td>
                       {CHECK_LABELS.map(({ key }) => (

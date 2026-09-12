@@ -20,6 +20,10 @@ import {
   UserCheck,
   Church,
   ChevronDown,
+  KeyRound,
+  UserPlus,
+  LogIn,
+  AlertTriangle,
 } from "lucide-react";
 
 type RoleTab = "sun_leader" | "mission_leader" | "pastor";
@@ -43,6 +47,41 @@ const APP_ROWS = [
   "모든 보고서 영구 보관, 언제든 검색",
   "지난 주·지난 달 기록 터치 한 번에",
   "미제출 순이 자동으로 표시, 자동 리마인더",
+];
+
+// ── 계정 안내: 회원가입 · 로그인 · 비밀번호
+const ACCOUNT_GUIDE = [
+  {
+    icon: UserPlus,
+    color: "bg-blue-100 text-blue-600",
+    title: "회원가입 하는 방법",
+    desc: "로그인 화면 아래 [회원가입]을 누르세요. 역할(순장 / 선교회장)을 고르고, 담당 순 번호(또는 소속 선교회)를 선택한 뒤, 이름과 전화번호, 비밀번호(숫자 4자리 이상)를 입력하고 신청하면 끝입니다. 이름이 곧 로그인 아이디이니 정확히 입력해주세요.",
+  },
+  {
+    icon: LogIn,
+    color: "bg-emerald-100 text-emerald-600",
+    title: "로그인 하는 방법",
+    desc: "로그인 화면에서 이름과 비밀번호만 입력하면 됩니다. 이메일은 필요 없습니다. '아이디 기억하기'를 체크해두면 다음부터 이름을 다시 입력하지 않아도 됩니다.",
+  },
+  {
+    icon: AlertTriangle,
+    color: "bg-amber-100 text-amber-600",
+    title: "회원가입이 안 될 때",
+    desc: "① 이미 같은 이름으로 가입되어 있으면 신청이 안 됩니다 — 이전에 가입한 적이 있는지 담임목사님께 먼저 확인해주세요. ② 순 번호나 선교회를 잘못 고르면 오류가 날 수 있으니 편성표를 다시 확인해주세요. ③ 비밀번호는 숫자만, 4자리 이상이어야 합니다.",
+  },
+  {
+    icon: AlertTriangle,
+    color: "bg-amber-100 text-amber-600",
+    title: "로그인이 안 될 때",
+    desc: "① 이름 철자와 띄어쓰기를 다시 확인해주세요(등록된 이름과 정확히 같아야 합니다). ② 비밀번호를 다시 확인해주세요. ③ 방금 회원가입했다면 담임목사님 승인이 나기 전까지는 로그인이 안 됩니다 — 승인을 기다려주세요. ④ 그래도 안 되면 아래 '비밀번호를 잊어버렸을 때'를 이용해주세요.",
+  },
+  {
+    icon: KeyRound,
+    color: "bg-rose-100 text-rose-600",
+    title: "비밀번호를 잊어버렸을 때",
+    desc: "로그인 화면 하단의 '비밀번호를 잊으셨나요?'를 누르세요. 이름과 새 비밀번호(확인 포함)를 입력해 요청을 보내면, 담임목사님이 [사용자 관리]에서 승인하는 즉시 새 비밀번호로 로그인할 수 있습니다. 승인 전까지는 기존 비밀번호로도 계속 로그인됩니다 — 안심하고 요청해주세요.",
+    highlight: "⚠️ 재발행하는 새 비밀번호는 반드시 숫자 6자리 이상이어야 합니다. (처음 회원가입할 때는 4자리 이상이면 되지만, 비밀번호를 다시 만들 때는 6자리 이상으로 더 안전하게 만들어야 합니다.)",
+  },
 ];
 
 // ── 목사님 유익
@@ -88,19 +127,23 @@ const STEPS: Record<RoleTab, { title: string; desc: string }[]> = {
     },
     {
       title: "주일 예배 후 로그인 → [보고서]",
-      desc: "이름과 비밀번호로 로그인하면 내 순 화면이 열립니다. 상단의 [보고서] 버튼을 누르세요. 날짜·순 번호·순장 이름은 자동으로 채워져 있습니다.",
+      desc: "이름과 비밀번호로 로그인하면 내 순 화면이 열립니다. 상단의 [보고서] 버튼을 누르세요. 날짜·순 번호·순장 이름은 자동으로 채워져 있습니다. 보고서는 일요일부터 토요일 사이 언제든 작성·수정할 수 있습니다.",
     },
     {
-      title: "순원 출석 체크",
-      desc: "우리 순원 명단이 자동으로 표시됩니다. 삼일·금요·주일낮·주일밤·순모임 참석과 전도, 주보 전달을 터치로 체크하고, 성경 읽은 장수를 입력하세요.",
+      title: "순원 출석 체크 — 6개 버튼은 바로, 나머지는 [열기]",
+      desc: "삼일·금요·주일낮·주일밤·순모임·전도, 이 6가지는 이름 옆 버튼을 바로 눌러 체크하면 됩니다. 성경 읽은 장수·주보전달·개별메모를 입력하려면 이름 줄 오른쪽의 [열기]를 눌러야 세부 입력창이 나옵니다. 다 입력했으면 [닫기]를 누르세요.",
+    },
+    {
+      title: "체크할수록 이름이 저절로 정리됩니다",
+      desc: "주일낮예배 참석을 체크한 순원은 목록 위쪽으로, 아직 체크하지 않은 순원은 아래쪽으로 자동으로 옮겨집니다. 그래서 아래쪽에 남은 이름만 보면 누구를 아직 확인 안 했는지 바로 알 수 있습니다.",
     },
     {
       title: "특별보고 작성",
       desc: "아픈 순원, 기도 제목, 기쁜 소식 등을 적으면 선교회장과 목사님께 그대로 전달됩니다. 종이보다 자세히 적을수록 목양에 큰 도움이 됩니다.",
     },
     {
-      title: "제출",
-      desc: "[제출] 버튼을 누르면 끝. 제출 전에는 임시저장으로 자유롭게 수정할 수 있고, 제출하면 선교회장에게 자동으로 전달됩니다. 지난 보고서는 히스토리에서 언제든 볼 수 있습니다.",
+      title: "제출 — 그리고 제출 후 수정·삭제까지",
+      desc: "[제출] 버튼을 누르면 선교회장에게 자동으로 전달됩니다. 제출한 뒤라도 선교회장님이 선교회보고서를 아직 제출하지 않았다면, 내용을 다시 고쳐서 재제출하거나 [이 보고서 삭제]로 지우고 새로 작성할 수 있습니다. 하지만 선교회장님이 선교회보고서를 제출하고 나면 그 순간부터 순보고서 수정·삭제가 잠깁니다 — 그 뒤엔 선교회장님이나 목사님께 말씀해주세요.",
     },
   ],
   mission_leader: [
@@ -121,8 +164,8 @@ const STEPS: Record<RoleTab, { title: string; desc: string }[]> = {
       desc: "질병 · 재정 문제 · 인간관계 · 진로/직장 · 기타 항목으로 나눠 기록하면, 목사님 화면에서 항목별로 정리되어 진행 상황까지 관리됩니다.",
     },
     {
-      title: "제출",
-      desc: "[제출]을 누르면 담임목사님께 자동 전달됩니다. 순장들의 보고서 수정은 선교회보고서 제출 전까지만 가능하니, 확인 후 제출해 주세요.",
+      title: "제출 — 이 순간 순보고서가 잠깁니다",
+      desc: "[제출]을 누르면 담임목사님께 자동 전달됩니다. 중요: 선교회보고서를 제출하는 순간, 소속 순장들의 순보고서는 더 이상 수정·삭제할 수 없게 잠깁니다. 그러니 순장님들이 아직 고칠 내용이 있는지 먼저 확인한 뒤에 제출해주세요.",
     },
   ],
   pastor: [
@@ -131,8 +174,8 @@ const STEPS: Record<RoleTab, { title: string; desc: string }[]> = {
       desc: "로그인하면 이번 주 순보고서 제출(45순), 선교회 제출(12선교회), 총 참석 인원, 헌금 총액, 성경 읽기 합계가 바로 보입니다. 브릿지선교회는 목자 직접보고로 표시됩니다.",
     },
     {
-      title: "사용자 관리 — 가입 승인",
-      desc: "순장·선교회장이 가입 신청하면 [사용자 관리]에서 승인하세요. 비밀번호를 잊은 성도의 비밀번호 초기화, 계정 직접 생성도 여기서 하실 수 있습니다.",
+      title: "사용자 관리 — 가입 승인 · 비밀번호 재발행 승인",
+      desc: "순장·선교회장이 가입 신청하면 [사용자 관리]에서 승인하세요. 성도가 '비밀번호 찾기'로 재발행을 요청하면 같은 화면 상단에 승인 대기 목록이 뜨는데, 새 비밀번호를 확인하고 [승인]을 누르면 즉시 적용됩니다. 계정 직접 생성, 비밀번호 즉시 초기화도 여기서 하실 수 있습니다.",
     },
     {
       title: "전체 현황 — 주차별 상세",
@@ -163,11 +206,19 @@ const ROLE_TABS: { key: RoleTab; label: string; icon: typeof Users }[] = [
 const FAQS = [
   {
     q: "비밀번호를 잊어버렸어요.",
-    a: "담임목사님(관리자)께 말씀해 주세요. [사용자 관리]에서 바로 새 비밀번호로 초기화해 드립니다.",
+    a: "로그인 화면의 '비밀번호를 잊으셨나요?'를 눌러 이름과 새 비밀번호(숫자 6자리 이상)를 입력해 요청하세요. 담임목사님이 승인하면 즉시 새 비밀번호로 로그인할 수 있고, 승인 전까지는 원래 비밀번호가 그대로 유지되니 안심하셔도 됩니다.",
   },
   {
-    q: "제출한 보고서를 고치고 싶어요.",
-    a: "제출 전(임시저장 상태)에는 자유롭게 수정할 수 있습니다. 순보고서는 선교회장이 선교회보고서를 제출하기 전까지 수정 요청이 가능하니, 급한 수정은 선교회장이나 목사님께 말씀해 주세요.",
+    q: "회원가입이 안 돼요.",
+    a: "같은 이름으로 이미 가입된 계정이 있으면 새로 가입할 수 없습니다. 담임목사님께 기존 계정이 있는지 확인해주시고, 없다면 순 번호·선교회 선택이 맞는지, 비밀번호가 숫자 4자리 이상인지 다시 확인해주세요.",
+  },
+  {
+    q: "로그인이 안 돼요.",
+    a: "이름과 비밀번호를 다시 확인해주세요. 방금 가입했다면 담임목사님 승인 전까지는 로그인이 되지 않습니다. 그래도 안 되면 '비밀번호를 잊어버렸을 때' 방법으로 새 비밀번호를 요청해주세요.",
+  },
+  {
+    q: "제출한 보고서를 고치거나 지우고 싶어요.",
+    a: "순장님은 선교회장님이 선교회보고서를 제출하기 전까지 순보고서를 자유롭게 수정하거나 삭제 후 다시 작성할 수 있습니다. 선교회장님이 제출하고 나면 그 순간 잠기니, 급한 수정은 선교회장이나 목사님께 말씀해 주세요.",
   },
   {
     q: "브릿지선교회는 어떻게 보고하나요?",
@@ -194,7 +245,7 @@ export default function GuidePage() {
         <div className="container mx-auto max-w-2xl px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Image src="/logo.png" alt="로고" width={26} height={26} />
-            <span className="font-bold">순보고 사용설명서</span>
+            <span className="font-bold text-base">순보고 사용설명서</span>
           </div>
           <Button
             variant="ghost"
@@ -213,7 +264,7 @@ export default function GuidePage() {
       <main className="container mx-auto max-w-2xl px-4 py-8 space-y-10">
         {/* 히어로 */}
         <section className="text-center space-y-3 pt-2">
-          <p className="text-xs tracking-[0.3em] text-[#C9A84C] font-semibold">
+          <p className="text-sm tracking-[0.3em] text-[#C9A84C] font-semibold">
             해운대순복음교회
           </p>
           <h1 className="text-3xl font-bold text-primary leading-snug" style={keepAll}>
@@ -221,37 +272,72 @@ export default function GuidePage() {
             <br />
             <span className="text-[#C9A84C]">3분</span>이면 끝납니다
           </h1>
-          <p className="text-sm text-muted-foreground leading-relaxed max-w-md mx-auto" style={keepAll}>
+          <p className="text-base text-muted-foreground leading-relaxed max-w-md mx-auto" style={keepAll}>
             순장님의 스마트폰에서 담임목사님의 책상까지 —
             제출 버튼 하나로 보고가 즉시 전달되고, 집계와 통계는 앱이 대신합니다.
           </p>
         </section>
 
+        {/* 계정 안내: 회원가입 · 로그인 · 비밀번호 */}
+        <section className="space-y-4">
+          <h2 className="text-xl font-bold text-primary flex items-center gap-2" style={keepAll}>
+            <KeyRound className="w-5 h-5 text-[#C9A84C]" />
+            회원가입 · 로그인 · 비밀번호
+          </h2>
+          <div className="space-y-3">
+            {ACCOUNT_GUIDE.map(({ icon: Icon, color, title, desc, highlight }) => (
+              <Card key={title} className="border-primary/15">
+                <CardContent className="pt-4 pb-4 flex items-start gap-3">
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${color}`}>
+                    <Icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-base font-bold text-primary" style={keepAll}>
+                      {title}
+                    </p>
+                    <p className="text-base text-muted-foreground leading-relaxed mt-1" style={keepAll}>
+                      {desc}
+                    </p>
+                    {highlight && (
+                      <p
+                        className="text-base font-bold text-rose-600 leading-relaxed mt-2 rounded-lg bg-rose-50 border border-rose-200 px-3 py-2"
+                        style={keepAll}
+                      >
+                        {highlight}
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </section>
+
         {/* 종이 vs 앱 */}
         <section className="space-y-4">
-          <h2 className="text-lg font-bold text-primary flex items-center gap-2" style={keepAll}>
+          <h2 className="text-xl font-bold text-primary flex items-center gap-2" style={keepAll}>
             <Sparkles className="w-5 h-5 text-[#C9A84C]" />
             종이 보고와 무엇이 다른가요?
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Card className="border-gray-200 bg-gray-50/60">
               <CardContent className="pt-4 pb-4 space-y-2.5">
-                <p className="text-sm font-bold text-gray-500">지금까지 — 종이 보고</p>
+                <p className="text-base font-bold text-gray-500">지금까지 — 종이 보고</p>
                 {PAPER_ROWS.map((row) => (
                   <div key={row} className="flex items-start gap-2">
                     <XCircle className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                    <p className="text-[13px] text-gray-600 leading-snug" style={keepAll}>{row}</p>
+                    <p className="text-sm text-gray-600 leading-snug" style={keepAll}>{row}</p>
                   </div>
                 ))}
               </CardContent>
             </Card>
             <Card className="border-[#C9A84C]/50 bg-[#C9A84C]/5">
               <CardContent className="pt-4 pb-4 space-y-2.5">
-                <p className="text-sm font-bold text-primary">이제부터 — 순보고 앱</p>
+                <p className="text-base font-bold text-primary">이제부터 — 순보고 앱</p>
                 {APP_ROWS.map((row) => (
                   <div key={row} className="flex items-start gap-2">
                     <CheckCircle2 className="w-4 h-4 text-[#C9A84C] mt-0.5 flex-shrink-0" />
-                    <p className="text-[13px] text-primary leading-snug" style={keepAll}>{row}</p>
+                    <p className="text-sm text-primary leading-snug" style={keepAll}>{row}</p>
                   </div>
                 ))}
               </CardContent>
@@ -262,11 +348,11 @@ export default function GuidePage() {
         {/* 목사님 유익 */}
         <section className="space-y-4">
           <div className="rounded-xl bg-primary text-primary-foreground px-5 py-4">
-            <h2 className="text-lg font-bold flex items-center gap-2" style={keepAll}>
+            <h2 className="text-xl font-bold flex items-center gap-2" style={keepAll}>
               <Church className="w-5 h-5 text-[#C9A84C]" />
               담임목사님께 드리는 6가지 유익
             </h2>
-            <p className="text-xs opacity-80 mt-1" style={keepAll}>
+            <p className="text-sm opacity-80 mt-1" style={keepAll}>
               순보고 앱은 행정 시간을 줄여 목양에 더 집중하시도록 돕습니다.
             </p>
           </div>
@@ -278,10 +364,10 @@ export default function GuidePage() {
                     <Icon className="w-4.5 h-4.5 text-[#C9A84C]" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-primary" style={keepAll}>
+                    <p className="text-base font-bold text-primary" style={keepAll}>
                       {i + 1}. {title}
                     </p>
-                    <p className="text-[13px] text-muted-foreground leading-relaxed mt-1" style={keepAll}>
+                    <p className="text-base text-muted-foreground leading-relaxed mt-1" style={keepAll}>
                       {desc}
                     </p>
                   </div>
@@ -293,7 +379,7 @@ export default function GuidePage() {
 
         {/* 역할별 사용법 */}
         <section className="space-y-4">
-          <h2 className="text-lg font-bold text-primary flex items-center gap-2" style={keepAll}>
+          <h2 className="text-xl font-bold text-primary flex items-center gap-2" style={keepAll}>
             <ClipboardList className="w-5 h-5 text-[#C9A84C]" />
             역할별 사용법
           </h2>
@@ -304,7 +390,7 @@ export default function GuidePage() {
               <button
                 key={key}
                 onClick={() => setTab(key)}
-                className={`h-12 rounded-lg border text-sm font-semibold flex items-center justify-center gap-1.5 transition-colors ${
+                className={`h-12 rounded-lg border text-base font-semibold flex items-center justify-center gap-1.5 transition-colors ${
                   tab === key
                     ? "bg-primary text-primary-foreground border-primary"
                     : "bg-card text-muted-foreground border-border hover:border-primary/40"
@@ -325,8 +411,8 @@ export default function GuidePage() {
                     {i + 1}
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-primary" style={keepAll}>{step.title}</p>
-                    <p className="text-[13px] text-muted-foreground leading-relaxed mt-1" style={keepAll}>
+                    <p className="text-base font-bold text-primary" style={keepAll}>{step.title}</p>
+                    <p className="text-base text-muted-foreground leading-relaxed mt-1" style={keepAll}>
                       {step.desc}
                     </p>
                   </div>
@@ -336,7 +422,7 @@ export default function GuidePage() {
 
             {tab === "sun_leader" && (
               <div className="rounded-lg border border-[#C9A84C]/50 bg-[#C9A84C]/10 px-4 py-3">
-                <p className="text-[13px] text-primary leading-relaxed" style={keepAll}>
+                <p className="text-base text-primary leading-relaxed" style={keepAll}>
                   <span className="font-bold">브릿지선교회 목자님께:</span>{" "}
                   김의현·홍혜진 목자님은 역할을 &lsquo;순장&rsquo;으로,
                   담당 순을 &lsquo;브릿지선교회&rsquo;로 선택해 가입하세요.
@@ -349,7 +435,7 @@ export default function GuidePage() {
 
         {/* FAQ */}
         <section className="space-y-4">
-          <h2 className="text-lg font-bold text-primary" style={keepAll}>자주 묻는 질문</h2>
+          <h2 className="text-xl font-bold text-primary" style={keepAll}>자주 묻는 질문</h2>
           <div className="space-y-2">
             {FAQS.map((faq, i) => (
               <Card key={faq.q} className="border-primary/15 overflow-hidden">
@@ -357,7 +443,7 @@ export default function GuidePage() {
                   className="w-full text-left px-4 py-3.5 flex items-center justify-between gap-2"
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
                 >
-                  <span className="text-sm font-semibold text-primary" style={keepAll}>
+                  <span className="text-base font-semibold text-primary" style={keepAll}>
                     Q. {faq.q}
                   </span>
                   <ChevronDown
@@ -368,7 +454,7 @@ export default function GuidePage() {
                 </button>
                 {openFaq === i && (
                   <div className="px-4 pb-4 -mt-1">
-                    <p className="text-[13px] text-muted-foreground leading-relaxed" style={keepAll}>
+                    <p className="text-base text-muted-foreground leading-relaxed" style={keepAll}>
                       {faq.a}
                     </p>
                   </div>
@@ -381,10 +467,10 @@ export default function GuidePage() {
         {/* 마무리 CTA */}
         <section className="text-center space-y-4 pb-6">
           <div className="rounded-xl border border-[#C9A84C]/40 bg-[#C9A84C]/5 px-5 py-6 space-y-3">
-            <p className="text-base font-bold text-primary" style={keepAll}>
+            <p className="text-lg font-bold text-primary" style={keepAll}>
               이번 주일부터 시작해 보세요
             </p>
-            <p className="text-[13px] text-muted-foreground leading-relaxed" style={keepAll}>
+            <p className="text-base text-muted-foreground leading-relaxed" style={keepAll}>
               한 번 가입하면 매주 3분. 종이와 계산기는 이제 내려놓으셔도 됩니다.
             </p>
             <div className="flex items-center justify-center gap-2">
@@ -396,7 +482,7 @@ export default function GuidePage() {
               </Button>
             </div>
           </div>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             해운대순복음교회 순보고 시스템
           </p>
         </section>

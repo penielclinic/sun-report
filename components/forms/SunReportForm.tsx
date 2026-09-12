@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -172,6 +172,21 @@ export default function SunReportForm({
   );
 
   const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+
+  // 주일낮예배 참석자를 목록 위쪽으로, 아직 체크 안 된 순원은 아래쪽으로 정렬
+  // (원래 배열의 idx는 그대로 유지해 입력 핸들러가 올바른 행을 가리키게 함)
+  const sortedMembers = useMemo(
+    () =>
+      members
+        .map((member, idx) => ({ member, idx }))
+        .sort((a, b) => {
+          const aAttended = a.member.attend_sun_day ? 0 : 1;
+          const bAttended = b.member.attend_sun_day ? 0 : 1;
+          if (aAttended !== bAttended) return aAttended - bAttended;
+          return a.idx - b.idx;
+        }),
+    [members]
+  );
 
   const updateMember = useCallback(
     (idx: number, key: keyof MemberRow, value: MemberRow[keyof MemberRow]) => {
@@ -408,10 +423,13 @@ export default function SunReportForm({
               </span>
             </CardTitle>
           </div>
+          <p className="text-sm text-muted-foreground mt-1">
+            주일낮예배 참석을 체크하면 이름이 위쪽으로 자동 정렬됩니다
+          </p>
         </CardHeader>
 
         <CardContent className="p-0">
-          {members.map((member, idx) => {
+          {sortedMembers.map(({ member, idx }) => {
             const isOpen = expandedIdx === idx;
             return (
               <div
