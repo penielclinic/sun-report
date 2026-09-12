@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { todayKST } from "@/lib/utils/report-aggregator";
 
 interface Props {
   reportDates: string[]; // "YYYY-MM-DD" — 보고서 있는 날짜 목록
@@ -14,7 +15,7 @@ const WEEK = ["일", "월", "화", "수", "목", "금", "토"];
 export default function MissionCalendar({ reportDates, selectedDate }: Props) {
   const router = useRouter();
   const dateSet = new Set(reportDates);
-  const today = new Date().toISOString().split("T")[0];
+  const today = todayKST();
 
   const initDate = new Date(selectedDate + "T00:00:00");
   const [viewYear, setViewYear] = useState(initDate.getFullYear());

@@ -42,6 +42,9 @@ export async function POST(request: Request) {
 }
 
 // 알림 삭제
+// notifications 테이블에는 DELETE RLS 정책이 없어(SELECT·UPDATE만 존재) 일반
+// 클라이언트로 삭제를 시도하면 0건 매칭되어 에러 없이 조용히 실패한다 — 반드시
+// admin 클라이언트로 삭제하고, 소유자 확인(user_id)은 애플리케이션 레벨에서 수행.
 export async function DELETE(request: Request) {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
@@ -49,7 +52,8 @@ export async function DELETE(request: Request) {
 
   const { id } = await request.json() as { id: string };
 
-  const { error } = await supabase
+  const admin = adminClient();
+  const { error } = await admin
     .from("notifications")
     .delete()
     .eq("id", id)

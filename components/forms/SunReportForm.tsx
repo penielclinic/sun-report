@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { PlusCircle, Trash2, Save, Send, ChevronDown, ChevronUp, ChevronLeft, Settings2 } from "lucide-react";
 import type { Profile, SunReport, SunReportMember } from "@/types/database";
 import { getSunMembers } from "@/lib/constants/sun-directory";
+import { todayKST } from "@/lib/utils/report-aggregator";
 
 interface Props {
   profile: Profile;
@@ -283,7 +284,7 @@ export default function SunReportForm({
                 onChange={(e) => handleDateChange(e.target.value)}
                 disabled={dateChecking}
                 className="h-10 w-44 text-base"
-                max={new Date().toISOString().split("T")[0]}
+                max={todayKST()}
               />
               {dateChecking && (
                 <span className="text-sm text-muted-foreground">확인 중...</span>
