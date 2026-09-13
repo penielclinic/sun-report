@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
-import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
+import { getThisSunday, formatDate, fetchAllByReportIds } from "@/lib/utils/report-aggregator";
 import * as XLSX from "xlsx";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -87,14 +87,12 @@ export async function GET(req: NextRequest) {
     report_id: string;
   };
 
-  let rawMembers: RawMember[] = [];
-  if (reportIds.length > 0) {
-    const { data } = await supabase
-      .from("sun_report_members")
-      .select("member_name, attend_samil, attend_friday, attend_sun_day, attend_sun_eve, attend_sun, evangelism, bible_read, report_id")
-      .in("report_id", reportIds);
-    rawMembers = (data ?? []) as RawMember[];
-  }
+  const rawMembers = await fetchAllByReportIds<RawMember>(
+    supabase,
+    "sun_report_members",
+    "member_name, attend_samil, attend_friday, attend_sun_day, attend_sun_eve, attend_sun, evangelism, bible_read, report_id",
+    reportIds
+  );
 
   const aggMap = new Map<string, {
     memberName: string; sunNumber: number; missionId: number;

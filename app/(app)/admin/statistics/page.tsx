@@ -7,6 +7,7 @@ import { StatisticsCharts } from "@/components/charts/StatisticsCharts";
 import { StatisticsDownloadButtons } from "@/components/charts/StatisticsDownloadButtons";
 import { AdminPdfDownload } from "@/components/admin/AdminPdfDownload";
 import { MISSION_COUNT, BRIDGE_MISSION_ID } from "@/lib/constants/sun-directory";
+import { fetchAllByReportIds } from "@/lib/utils/report-aggregator";
 
 export type PeriodData = {
   date: string;
@@ -95,14 +96,12 @@ export default async function StatisticsPage({
     attend_sun_day: boolean; attend_sun_eve: boolean;
     attend_sun: boolean; evangelism: boolean;
   };
-  let memberRows: MRow[] = [];
-  if (reportIds.length > 0) {
-    const { data } = await supabase
-      .from("sun_report_members")
-      .select("report_id,attend_samil,attend_friday,attend_sun_day,attend_sun_eve,attend_sun,evangelism")
-      .in("report_id", reportIds);
-    memberRows = (data ?? []) as MRow[];
-  }
+  const memberRows = await fetchAllByReportIds<MRow>(
+    supabase,
+    "sun_report_members",
+    "report_id,attend_samil,attend_friday,attend_sun_day,attend_sun_eve,attend_sun,evangelism",
+    reportIds
+  );
 
   // ── 선교회보고서 (헌금)
   const { data: missionReports } = await supabase

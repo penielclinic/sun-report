@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, BookOpen, TrendingUp, Megaphone, ArrowLeft } from "lucide-react";
 import { StatisticsCharts } from "@/components/charts/StatisticsCharts";
 import { MISSION_COUNT, BRIDGE_MISSION_ID } from "@/lib/constants/sun-directory";
+import { fetchAllByReportIds } from "@/lib/utils/report-aggregator";
 import type { PeriodData } from "@/app/(app)/admin/statistics/page";
 
 function getAdminClient() {
@@ -79,14 +80,12 @@ export default async function PublicStatsPage({
     attend_sun_day: boolean; attend_sun_eve: boolean;
     attend_sun: boolean; evangelism: boolean;
   };
-  let memberRows: MRow[] = [];
-  if (reportIds.length > 0) {
-    const { data } = await admin
-      .from("sun_report_members")
-      .select("report_id,attend_samil,attend_friday,attend_sun_day,attend_sun_eve,attend_sun,evangelism")
-      .in("report_id", reportIds);
-    memberRows = (data ?? []) as MRow[];
-  }
+  const memberRows = await fetchAllByReportIds<MRow>(
+    admin,
+    "sun_report_members",
+    "report_id,attend_samil,attend_friday,attend_sun_day,attend_sun_eve,attend_sun,evangelism",
+    reportIds
+  );
 
   type Bucket = { samil: number; friday: number; sunDay: number; sunEve: number; sun: number; evangelism: number; attend: number; bible: number };
   const bucketMap = new Map<string, Bucket>();

@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
+import { getThisSunday, formatDate, fetchAllByReportIds } from "@/lib/utils/report-aggregator";
 import { Trophy, ChevronLeft } from "lucide-react";
 import MemberScoresTable from "./MemberScoresTable";
 import DateRangePicker from "./DateRangePicker";
@@ -115,16 +115,12 @@ export default async function MemberScoresPage({
     report_id: string;
   };
 
-  let rawMembers: RawMember[] = [];
-  if (reportIds.length > 0) {
-    const { data } = await supabase
-      .from("sun_report_members")
-      .select(
-        "member_name, attend_samil, attend_friday, attend_sun_day, attend_sun_eve, attend_sun, evangelism, bible_read, report_id"
-      )
-      .in("report_id", reportIds);
-    rawMembers = (data ?? []) as RawMember[];
-  }
+  const rawMembers = await fetchAllByReportIds<RawMember>(
+    supabase,
+    "sun_report_members",
+    "member_name, attend_samil, attend_friday, attend_sun_day, attend_sun_eve, attend_sun, evangelism, bible_read, report_id",
+    reportIds
+  );
 
   // ③ 멤버별 집계 (member_name + sun_number 기준)
   const aggMap = new Map<string, Omit<MemberAgg, "rank" | "totalScore">>();

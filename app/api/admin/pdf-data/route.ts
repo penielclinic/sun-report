@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
-import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
+import { getThisSunday, formatDate, fetchAllByReportIds } from "@/lib/utils/report-aggregator";
 import { MISSION_COUNT } from "@/lib/constants/sun-directory";
 
 function getDateRange(period: string) {
@@ -55,14 +55,12 @@ export async function GET(req: NextRequest) {
     report_id: string;
   };
 
-  let memberRows: MemberRow[] = [];
-  if (reportIds.length > 0) {
-    const { data } = await supabase
-      .from("sun_report_members")
-      .select("attend_samil,attend_friday,attend_sun_day,attend_sun_eve,attend_sun,evangelism,bible_read,report_id")
-      .in("report_id", reportIds);
-    memberRows = (data ?? []) as MemberRow[];
-  }
+  const memberRows = await fetchAllByReportIds<MemberRow>(
+    supabase,
+    "sun_report_members",
+    "attend_samil,attend_friday,attend_sun_day,attend_sun_eve,attend_sun,evangelism,bible_read,report_id",
+    reportIds
+  );
 
   // ③ 선교회보고서 (헌금)
   const { data: missionReports } = await supabase

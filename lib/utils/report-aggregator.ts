@@ -1,4 +1,5 @@
 import type { SunReport } from "@/types/database";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 /**
  * 소속 순보고서들을 집계해 선교회보고서 초기값 반환
@@ -51,4 +52,40 @@ export function formatDate(date: Date): string {
 export function todayKST(): string {
   const { y, m, d } = kstDateParts(new Date());
   return formatDate(new Date(Date.UTC(y, m, d)));
+}
+
+const SUPABASE_MAX_ROWS = 1000;
+
+/**
+ * report_id 목록으로 하위 테이블(주로 sun_report_members)의 행을 전부 가져온다.
+ *
+ * Supabase(PostgREST)는 응답 행 수를 기본 1000개로 제한하는데, 통계·집계 화면처럼
+ * 여러 주에 걸친 report_id를 한 번에 in() 조회하면 전체 순원 행 수가 1000을 넘는
+ * 순간부터 초과분이 에러 없이 조용히 잘려나가 집계 수치가 실제보다 적게 나오는
+ * 문제가 있었다 (2026-09-13 확인: sun_report_members가 1000행을 넘어서면서
+ * 당일 출석 집계가 절반 이하로 누락됨). range()로 페이지네이션해 전량을 가져온다.
+ */
+export async function fetchAllByReportIds<T>(
+  supabase: SupabaseClient,
+  table: string,
+  columns: string,
+  reportIds: string[]
+): Promise<T[]> {
+  if (reportIds.length === 0) return [];
+
+  const all: T[] = [];
+  let from = 0;
+  for (;;) {
+    const { data, error } = await supabase
+      .from(table)
+      .select(columns)
+      .in("report_id", reportIds)
+      .range(from, from + SUPABASE_MAX_ROWS - 1);
+    if (error) break; // 기존 호출부와 동일하게 조회 실패 시 지금까지 모은 결과만 반환
+    const rows = (data ?? []) as T[];
+    all.push(...rows);
+    if (rows.length < SUPABASE_MAX_ROWS) break;
+    from += SUPABASE_MAX_ROWS;
+  }
+  return all;
 }

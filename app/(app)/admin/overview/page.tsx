@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle2, XCircle, Clock } from "lucide-react";
 import { SUN_DIRECTORY, MISSION_COUNT, SUN_COUNT, getMissionName } from "@/lib/constants/sun-directory";
-import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
+import { getThisSunday, formatDate, fetchAllByReportIds } from "@/lib/utils/report-aggregator";
 import { OverviewDatePicker } from "@/components/admin/OverviewDatePicker";
 import { OverviewTrendChart } from "@/components/admin/OverviewTrendChart";
 import { OverviewMissionPdf } from "@/components/admin/OverviewMissionPdf";
@@ -49,14 +49,12 @@ export default async function OverviewPage({
     attend_sun_day: boolean; attend_sun_eve: boolean;
     attend_sun: boolean; evangelism: boolean;
   };
-  let memberRows: MRow[] = [];
-  if (allReportIds.length > 0) {
-    const { data } = await supabase
-      .from("sun_report_members")
-      .select("report_id,attend_samil,attend_friday,attend_sun_day,attend_sun_eve,attend_sun,evangelism")
-      .in("report_id", allReportIds);
-    memberRows = (data ?? []) as MRow[];
-  }
+  const memberRows = await fetchAllByReportIds<MRow>(
+    supabase,
+    "sun_report_members",
+    "report_id,attend_samil,attend_friday,attend_sun_day,attend_sun_eve,attend_sun,evangelism",
+    allReportIds
+  );
 
   // 전체 합계 (상단 카드)
   const attend6 = [

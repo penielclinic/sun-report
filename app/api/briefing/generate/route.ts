@@ -5,6 +5,7 @@ import {
   PASTORAL_BRIEFING_SYSTEM_PROMPT,
 } from "@/lib/prompts/pastoral-briefing";
 import { buildBriefingUserPrompt } from "@/lib/prompts/briefing-formatter";
+import { fetchAllByReportIds } from "@/lib/utils/report-aggregator";
 
 export async function POST(req: NextRequest) {
   const supabase = await createClient();
@@ -42,15 +43,12 @@ export async function POST(req: NextRequest) {
     .eq("status", "submitted");
 
   const reportIds = (reports ?? []).map((r) => r.id);
-  let memberRows: Array<{ bible_read: number }> = [];
-
-  if (reportIds.length > 0) {
-    const { data } = await supabase
-      .from("sun_report_members")
-      .select("bible_read")
-      .in("report_id", reportIds);
-    memberRows = data ?? [];
-  }
+  const memberRows = await fetchAllByReportIds<{ bible_read: number }>(
+    supabase,
+    "sun_report_members",
+    "bible_read",
+    reportIds
+  );
 
   // 이번 주 선교회 특별보고 항목 (새로 접수된 것)
   const { data: weekSpecialItems } = await supabase
