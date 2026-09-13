@@ -27,14 +27,28 @@ export default async function NewSunReportPage() {
 
   const thisSunday = formatDate(getThisSunday());
 
+  // 관리자 클라이언트 사용: 순장 교체 등으로 기존 보고서 작성자(created_by)가
+  // 현재 로그인한 순장과 달라도 같은 순의 기록을 안정적으로 읽기 위함
+  const admin = getAdminClient();
+
+  // 이번 주 보고서가 이미 있으면 새로 만들지 않고 그 보고서로 이동.
+  // 이 확인이 없으면(예: 상단 메뉴 [보고서]를 다시 눌렀을 때) 같은 주에 중복
+  // 보고서가 생성되어 참석 인원 등이 두 배로 잡히는 문제가 있었음.
+  if (profile.sun_number) {
+    const { data: existing } = await admin
+      .from("sun_reports")
+      .select("id")
+      .eq("sun_number", profile.sun_number)
+      .eq("report_date", thisSunday)
+      .maybeSingle();
+    if (existing) redirect(`/report/sun/${existing.id}`);
+  }
+
   // 우리 순의 가장 최근 보고서 순원 명단 (새가족 등록 등 최신 편성 유지용)
   // 정적 편성표(sun-directory.ts)가 아니라 지난 주 실제 제출 명단을 기준으로 삼아,
   // 순장이 새가족을 추가하면 다음 주에도 계속 명단에 남도록 한다.
   let previousMembers: string[] | null = null;
   if (profile.sun_number) {
-    // 관리자 클라이언트 사용: 순장 교체 등으로 지난 보고서 작성자(created_by)가
-    // 현재 로그인한 순장과 달라도 같은 순의 최신 명단을 안정적으로 읽기 위함
-    const admin = getAdminClient();
     const { data: lastReport } = await admin
       .from("sun_reports")
       .select("id")
