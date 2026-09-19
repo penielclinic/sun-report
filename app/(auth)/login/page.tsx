@@ -78,7 +78,7 @@ export default function LoginPage() {
         </div>
 
         {/* 새 기능 공지 — 반짝이는 필독 알림 */}
-        <UpdateNotice />
+        <UpdateNotice className="mb-6" />
 
         <Card className="shadow-md">
           <CardHeader className="pb-4">

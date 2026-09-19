@@ -9,6 +9,7 @@ import AdminDeleteButton from "@/components/dashboard/AdminDeleteButton";
 import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
 import { MISSION_COUNT, SUN_COUNT, MISSION_REPORT_COUNT, BRIDGE_MISSION_ID, getMissionName } from "@/lib/constants/sun-directory";
 import { AdminPdfDownload } from "@/components/admin/AdminPdfDownload";
+import UpdateNotice from "@/components/UpdateNotice";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
@@ -57,6 +58,9 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* 새 기능 공지 (로그인 화면과 동일) */}
+      <UpdateNotice />
+
       <div className="flex items-start justify-between gap-2">
         <div>
           <h2 className="text-xl font-bold text-primary">

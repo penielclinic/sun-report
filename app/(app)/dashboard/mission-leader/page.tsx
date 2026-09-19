@@ -11,6 +11,7 @@ import { getSunsByMission } from "@/lib/constants/sun-directory";
 import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
 import MissionCalendar from "@/components/dashboard/MissionCalendar";
 import PastorMessageCard from "@/components/dashboard/PastorMessageCard";
+import UpdateNotice from "@/components/UpdateNotice";
 
 export default async function MissionLeaderDashboard({
   searchParams,
@@ -69,6 +70,9 @@ export default async function MissionLeaderDashboard({
 
   return (
     <div className="space-y-6">
+      {/* 새 기능 공지 (로그인 화면과 동일) */}
+      <UpdateNotice />
+
       <div>
         <h2 className="text-2xl font-bold text-primary">
           선교회 {missionId} — {profile.name} 선교회장

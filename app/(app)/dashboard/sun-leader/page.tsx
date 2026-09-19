@@ -7,6 +7,7 @@ import { PlusCircle, Clock, CheckCircle2, ChevronRight } from "lucide-react";
 import SunReportList from "@/components/dashboard/SunReportList";
 import PastorMessageCard from "@/components/dashboard/PastorMessageCard";
 import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
+import UpdateNotice from "@/components/UpdateNotice";
 
 export default async function SunLeaderDashboard() {
   const supabase = await createClient();
@@ -37,6 +38,9 @@ export default async function SunLeaderDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* 새 기능 공지 (로그인 화면과 동일) */}
+      <UpdateNotice />
+
       {/* 인사 & 현재 상태 */}
       <div>
         <h2 className="text-2xl font-bold text-primary">
