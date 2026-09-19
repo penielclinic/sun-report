@@ -20,8 +20,8 @@ export default function UpdateNotice({ className = "" }: { className?: string })
           0%, 100% { opacity: 1; }
           50% { opacity: 0.45; }
         }
-        .notice-glow { animation: notice-glow 3.2s ease-in-out infinite; }
-        .notice-blink { animation: notice-blink 2s steps(2, start) infinite; }
+        .notice-glow { animation: notice-glow 2.13s ease-in-out infinite; }
+        .notice-blink { animation: notice-blink 1.33s steps(2, start) infinite; }
         @media (prefers-reduced-motion: reduce) {
           .notice-glow, .notice-blink { animation: none; }
         }
