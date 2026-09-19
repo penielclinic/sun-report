@@ -65,6 +65,8 @@ export interface SunReportMember {
   bulletin_recv: boolean;
   bible_read: number;
   member_note: string | null;
+  bible_tongdok: boolean; // 성경통독 완료 (완료한 주에 체크)
+  bible_pilsa: boolean;   // 성경필사 완료 (완료한 주에 체크)
 }
 
 export interface MissionReport {

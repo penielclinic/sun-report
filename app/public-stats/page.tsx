@@ -7,6 +7,8 @@ import { Users, BookOpen, TrendingUp, Megaphone, ArrowLeft } from "lucide-react"
 import { StatisticsCharts } from "@/components/charts/StatisticsCharts";
 import { MISSION_COUNT, BRIDGE_MISSION_ID } from "@/lib/constants/sun-directory";
 import { fetchAllByReportIds } from "@/lib/utils/report-aggregator";
+import { buildBibleCompletions } from "@/lib/utils/bible-completion";
+import BibleCompletionList from "@/components/BibleCompletionList";
 import type { PeriodData } from "@/app/(app)/admin/statistics/page";
 
 function getAdminClient() {
@@ -130,6 +132,30 @@ export default async function PublicStatsPage({
     mission: i + 1 === BRIDGE_MISSION_ID ? "브릿지" : `${i + 1}선`,
     attend: missionMap.get(i + 1) ?? 0,
   }));
+
+  // 성경통독·필사 완료자 — 순보고서 체크에서 자동 반영 (최신 완료자가 위로)
+  type BibleRow = { report_id: string; member_name: string; bible_tongdok: boolean; bible_pilsa: boolean };
+  let bibleRows: BibleRow[] = [];
+  if (reportIds.length > 0) {
+    const { data } = await admin
+      .from("sun_report_members")
+      .select("report_id, member_name, bible_tongdok, bible_pilsa")
+      .in("report_id", reportIds)
+      .or("bible_tongdok.eq.true,bible_pilsa.eq.true");
+    bibleRows = (data ?? []) as BibleRow[];
+  }
+  const bibleByReport = new Map<string, BibleRow[]>();
+  for (const row of bibleRows) {
+    bibleByReport.set(row.report_id, [...(bibleByReport.get(row.report_id) ?? []), row]);
+  }
+  const bibleCompletions = (
+    await buildBibleCompletions(
+      admin,
+      (sunReports ?? [])
+        .filter((r) => bibleByReport.has(r.id))
+        .map((r) => ({ mission_id: r.mission_id, report_date: r.report_date, members: bibleByReport.get(r.id)! }))
+    )
+  ).sort((a, b) => b.reportDate.localeCompare(a.reportDate));
 
   const avgAttend = allPeriodData.length > 0
     ? Math.round(allPeriodData.reduce((s, d) => s + d.attend, 0) / allPeriodData.length)
@@ -282,6 +308,13 @@ export default async function PublicStatsPage({
             </div>
           </CardContent>
         </Card>
+
+        <BibleCompletionList
+          completions={bibleCompletions}
+          title={`성경통독 · 필사 완료자 (${periodMeta.desc})`}
+          emptyText="이 기간에 보고된 통독·필사 완료자가 없습니다."
+          showDate
+        />
 
         <p className="text-center text-[11px] text-muted-foreground pb-4">
           해운대순복음교회 순보고 시스템

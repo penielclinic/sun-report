@@ -17,6 +17,8 @@ const CHECK_LABELS: { key: keyof SunReportMember; label: string }[] = [
   { key: "attend_sun", label: "순모임" },
   { key: "evangelism", label: "전도" },
   { key: "bulletin_recv", label: "주보전달" },
+  { key: "bible_tongdok", label: "통독" },
+  { key: "bible_pilsa", label: "필사" },
 ];
 
 const ATTEND_SUMMARY: { key: keyof SunReportMember; label: string }[] = [

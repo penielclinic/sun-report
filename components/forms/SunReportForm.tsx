@@ -42,6 +42,8 @@ type MemberRow = {
   bulletin_recv: boolean;
   bible_read: number;
   member_note: string;
+  bible_tongdok: boolean; // 성경통독 완료
+  bible_pilsa: boolean;   // 성경필사 완료
 };
 
 const EMPTY_MEMBER = (): MemberRow => ({
@@ -55,6 +57,8 @@ const EMPTY_MEMBER = (): MemberRow => ({
   bulletin_recv: false,
   bible_read: 0,
   member_note: "",
+  bible_tongdok: false,
+  bible_pilsa: false,
 });
 
 // 예배 시간 옵션
@@ -167,6 +171,8 @@ export default function SunReportForm({
           bulletin_recv: m.bulletin_recv,
           bible_read: m.bible_read,
           member_note: m.member_note ?? "",
+          bible_tongdok: m.bible_tongdok ?? false,
+          bible_pilsa: m.bible_pilsa ?? false,
         }))
       : defaultMembers()
   );
@@ -426,6 +432,9 @@ export default function SunReportForm({
           <p className="text-sm text-muted-foreground mt-1">
             주일낮예배 참석을 체크하면 이름이 위쪽으로 자동 정렬됩니다
           </p>
+          <p className="text-sm text-[#8a6d25] mt-0.5" style={{ wordBreak: "keep-all" }}>
+            성경통독·필사를 마친 순원은 [열기]를 눌러 체크해주세요 (마친 주에 한 번만)
+          </p>
         </CardHeader>
 
         <CardContent className="p-0">
@@ -450,6 +459,11 @@ export default function SunReportForm({
                       isOpen ? "border-emerald-400 bg-white ring-1 ring-emerald-300" : ""
                     }`}
                   />
+                  {(member.bible_tongdok || member.bible_pilsa) && (
+                    <span className="shrink-0 rounded-full bg-[#C9A84C]/15 text-[#8a6d25] text-[11px] font-bold px-2 py-1 whitespace-nowrap">
+                      {[member.bible_tongdok && "통독", member.bible_pilsa && "필사"].filter(Boolean).join("·")}
+                    </span>
+                  )}
                   {/* ── 펼치기 버튼 ── */}
                   <button
                     type="button"
@@ -522,6 +536,27 @@ export default function SunReportForm({
                           <span className="text-base">주보전달</span>
                         </label>
                       </div>
+                    </div>
+                    {/* 성경통독·필사 완료 — 완료한 주에만 체크 (목사님께 보고·공개 통계에 표시) */}
+                    <div className="grid grid-cols-2 gap-2">
+                      {([
+                        { key: "bible_tongdok", label: "성경통독 완료" },
+                        { key: "bible_pilsa", label: "성경필사 완료" },
+                      ] as const).map(({ key, label }) => (
+                        <label
+                          key={key}
+                          className={`flex items-center gap-2 rounded-lg border px-3 py-2 cursor-pointer transition-colors ${
+                            member[key] ? "border-[#C9A84C] bg-[#C9A84C]/10" : "border-border bg-white"
+                          }`}
+                        >
+                          <Checkbox
+                            checked={member[key]}
+                            onCheckedChange={(v) => updateMember(idx, key, !!v)}
+                            className="w-5 h-5"
+                          />
+                          <span className="text-base whitespace-nowrap">{label}</span>
+                        </label>
+                      ))}
                     </div>
                     <Input
                       value={member.member_note}

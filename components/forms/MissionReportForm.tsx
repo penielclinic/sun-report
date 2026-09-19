@@ -24,6 +24,8 @@ import type {
   MissionReportComment,
 } from "@/types/database";
 import { SPECIAL_CATEGORIES } from "@/types/database";
+import BibleCompletionList from "@/components/BibleCompletionList";
+import type { BibleCompletion } from "@/lib/utils/bible-completion";
 
 interface Props {
   profile: Profile;
@@ -42,6 +44,8 @@ interface Props {
   comments?: MissionReportComment[];
   currentUserId?: string;
   canComment?: boolean;
+  /** 이번 주 소속 순의 성경통독·필사 완료자 (서버에서 교적부 직분까지 붙여 전달) */
+  bibleCompletions?: BibleCompletion[];
 }
 
 type SpecialItemDraft = {
@@ -61,6 +65,7 @@ export default function MissionReportForm({
   comments = [],
   currentUserId,
   canComment = false,
+  bibleCompletions = [],
 }: Props) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
@@ -252,6 +257,9 @@ export default function MissionReportForm({
         </CardContent>
       </Card>
 
+      {/* 성경통독·필사 보고 — 순보고서 체크에서 자동 집계되어 목사님께 함께 보고됨 */}
+      <BibleCompletionList completions={bibleCompletions} />
+
       {/* 순별 보고 상세 */}
       {sunReports.length > 0 && (
         <Card>
@@ -327,6 +335,8 @@ export default function MissionReportForm({
                                 <th className="py-1.5 px-1.5 font-medium">전도</th>
                                 <th className="py-1.5 px-1.5 font-medium">주보</th>
                                 <th className="py-1.5 px-1.5 font-medium">성경(장)</th>
+                                <th className="py-1.5 px-1.5 font-medium">통독</th>
+                                <th className="py-1.5 px-1.5 font-medium">필사</th>
                               </tr>
                             </thead>
                             <tbody>
@@ -343,6 +353,8 @@ export default function MissionReportForm({
                                   <td className="py-1.5 px-1.5 text-center font-medium">
                                     {m.bible_read > 0 ? m.bible_read : "−"}
                                   </td>
+                                  <td className="py-1.5 px-1.5 text-center text-[#B8933A] font-bold">{m.bible_tongdok ? "✓" : "−"}</td>
+                                  <td className="py-1.5 px-1.5 text-center text-[#B8933A] font-bold">{m.bible_pilsa ? "✓" : "−"}</td>
                                 </tr>
                               ))}
                             </tbody>

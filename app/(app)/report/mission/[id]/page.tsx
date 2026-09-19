@@ -2,6 +2,8 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect, notFound } from "next/navigation";
 import MissionReportForm from "@/components/forms/MissionReportForm";
 import { aggregateSunReports } from "@/lib/utils/report-aggregator";
+import { buildBibleCompletions } from "@/lib/utils/bible-completion";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
 import type { SunReportWithMembers, SpecialReportItem } from "@/types/database";
 
 export default async function MissionReportDetailPage({
@@ -45,6 +47,18 @@ export default async function MissionReportDetailPage({
 
   const aggregated = aggregateSunReports((sunReports ?? []) as SunReportWithMembers[]);
 
+  // 성경통독·필사 완료자 — 직분은 교적부(members)에서 조회 (서비스 롤로만 접근 가능)
+  const admin = createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+  const bibleCompletions = await buildBibleCompletions(
+    admin,
+    ((sunReports ?? []) as SunReportWithMembers[])
+      .filter((r) => r.status === "submitted")
+      .map((r) => ({ mission_id: r.mission_id, report_date: r.report_date, members: r.sun_report_members }))
+  );
+
   const { data: specialItems } = await supabase
     .from("special_report_items")
     .select("*")
@@ -77,6 +91,7 @@ export default async function MissionReportDetailPage({
         comments={comments ?? []}
         currentUserId={user.id}
         canComment={canComment}
+        bibleCompletions={bibleCompletions}
       />
     </div>
   );
