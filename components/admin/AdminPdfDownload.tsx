@@ -232,15 +232,15 @@ export function AdminPdfDownload() {
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 shrink-0">
       {/* 기간 선택 */}
-      <div className="flex rounded-lg border border-border overflow-hidden text-sm">
+      <div className="flex rounded-lg border border-border overflow-hidden text-sm shrink-0">
         {(["week", "month", "year"] as Period[]).map((p) => (
           <button
             key={p}
             type="button"
             onClick={() => setPeriod(p)}
-            className={`px-3 py-1.5 font-medium transition-colors ${
+            className={`px-2 sm:px-3 py-1.5 font-medium whitespace-nowrap transition-colors ${
               period === p
                 ? "bg-primary text-primary-foreground"
                 : "bg-background text-muted-foreground hover:bg-muted"

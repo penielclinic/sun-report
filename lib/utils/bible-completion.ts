@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { getMissionName } from "@/lib/constants/sun-directory";
+import { getMissionName, BRIDGE_MISSION_ID } from "@/lib/constants/sun-directory";
 
 // 성경통독·필사 완료자 보고 — 순보고서에서 체크된 순원을 모아
 // "성경필사 / 최경남(권사 (3선교회))" 형식으로 선교회보고서·공개 통계에 표시한다.
@@ -94,5 +94,86 @@ export async function buildBibleCompletions(
       (a.kind === b.kind ? 0 : a.kind === "성경필사" ? -1 : 1) ||
       a.missionId - b.missionId ||
       a.name.localeCompare(b.name, "ko")
+  );
+}
+
+type FlagRow = { report_id: string; member_name: string; bible_tongdok: boolean; bible_pilsa: boolean };
+
+/** 순보고서 id 목록에서 통독·필사 체크된 순원만 가져온다 */
+async function fetchFlaggedMembers(admin: SupabaseClient, reportIds: string[]): Promise<Map<string, FlagRow[]>> {
+  const byReport = new Map<string, FlagRow[]>();
+  if (reportIds.length === 0) return byReport;
+  const { data } = await admin
+    .from("sun_report_members")
+    .select("report_id, member_name, bible_tongdok, bible_pilsa")
+    .in("report_id", reportIds)
+    .or("bible_tongdok.eq.true,bible_pilsa.eq.true");
+  for (const row of (data ?? []) as FlagRow[]) {
+    byReport.set(row.report_id, [...(byReport.get(row.report_id) ?? []), row]);
+  }
+  return byReport;
+}
+
+/**
+ * 순장 → 선교회장 단계: 특정 선교회·날짜의 제출된 순보고서에서 통독·필사 완료자.
+ * (선교회장 대시보드용 — 선교회보고서 제출 전에도 보인다)
+ */
+export async function fetchSunLevelCompletions(
+  admin: SupabaseClient,
+  missionId: number,
+  reportDate: string
+): Promise<BibleCompletion[]> {
+  const { data: reports } = await admin
+    .from("sun_reports")
+    .select("id, mission_id, report_date")
+    .eq("mission_id", missionId)
+    .eq("report_date", reportDate)
+    .eq("status", "submitted");
+  const rows = (reports ?? []) as { id: string; mission_id: number; report_date: string }[];
+  const flagged = await fetchFlaggedMembers(admin, rows.map((r) => r.id));
+  return buildBibleCompletions(
+    admin,
+    rows.filter((r) => flagged.has(r.id)).map((r) => ({ ...r, members: flagged.get(r.id)! }))
+  );
+}
+
+/**
+ * 선교회장 → 목사님 단계: 선교회장이 선교회보고서를 "제출"한 건만 포함한다.
+ * 브릿지선교회는 선교회장이 없으므로 목자의 순보고서 제출이 곧 최종 보고로 포함.
+ * (담임목사 대시보드·공개 통계용)
+ */
+export async function fetchReportedCompletions(
+  admin: SupabaseClient,
+  fromDate: string,
+  toDate: string
+): Promise<BibleCompletion[]> {
+  const [{ data: missionReports }, { data: sunReports }] = await Promise.all([
+    admin
+      .from("sunbogo_mission_reports")
+      .select("mission_id, report_date")
+      .eq("status", "submitted")
+      .gte("report_date", fromDate)
+      .lte("report_date", toDate),
+    admin
+      .from("sun_reports")
+      .select("id, mission_id, report_date")
+      .eq("status", "submitted")
+      .gte("report_date", fromDate)
+      .lte("report_date", toDate),
+  ]);
+
+  const reported = new Set(
+    ((missionReports ?? []) as { mission_id: number; report_date: string }[]).map(
+      (m) => `${m.mission_id}|${m.report_date}`
+    )
+  );
+  const eligible = ((sunReports ?? []) as { id: string; mission_id: number; report_date: string }[]).filter(
+    (r) => r.mission_id === BRIDGE_MISSION_ID || reported.has(`${r.mission_id}|${r.report_date}`)
+  );
+
+  const flagged = await fetchFlaggedMembers(admin, eligible.map((r) => r.id));
+  return buildBibleCompletions(
+    admin,
+    eligible.filter((r) => flagged.has(r.id)).map((r) => ({ ...r, members: flagged.get(r.id)! }))
   );
 }

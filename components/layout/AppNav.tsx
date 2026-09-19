@@ -76,27 +76,27 @@ export default function AppNav({ profile }: { profile: Profile }) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-primary text-primary-foreground shadow-sm">
-      <div className="container mx-auto max-w-2xl px-4 h-16 flex items-center justify-between">
-        {/* 로고 + 앱이름 */}
-        <Link href={dashboardHref} className="flex items-center gap-2">
+      <div className="container mx-auto max-w-2xl px-3 sm:px-4 h-16 flex items-center justify-between gap-2">
+        {/* 로고 + 앱이름 — 메뉴 버튼이 많아도(담임목사) 줄어들거나 한 글자씩 줄바꿈되지 않게 고정 */}
+        <Link href={dashboardHref} className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <Image src="/logo.png" alt="로고" width={30} height={30} />
-          <span className="font-bold text-lg">순보고</span>
+          <span className="font-bold text-lg whitespace-nowrap">순보고</span>
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           {/* 이름·역할 */}
           <span className="text-sm opacity-90 hidden sm:block">
             {profile.name}{" "}
             <span className="opacity-70">({ROLE_LABEL[profile.role]})</span>
           </span>
 
-          <nav className="flex items-center gap-1">
+          <nav className="flex items-center gap-0.5 sm:gap-1">
             {/* 홈 */}
             <Button
               variant="ghost"
               size="sm"
               asChild
-              className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-2"
+              className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-1 sm:px-2"
             >
               <Link href={dashboardHref}>
                 <LayoutDashboard className="w-5 h-5" />
@@ -110,7 +110,7 @@ export default function AppNav({ profile }: { profile: Profile }) {
                 variant="ghost"
                 size="sm"
                 asChild
-                className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-2"
+                className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-1 sm:px-2"
               >
                 <Link href="/report/sun/new">
                   <FileText className="w-5 h-5" />
@@ -125,7 +125,7 @@ export default function AppNav({ profile }: { profile: Profile }) {
                 variant="ghost"
                 size="sm"
                 asChild
-                className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-2"
+                className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-1 sm:px-2"
               >
                 <Link href="/guide">
                   <HelpCircle className="w-5 h-5" />
@@ -140,7 +140,7 @@ export default function AppNav({ profile }: { profile: Profile }) {
                 variant="ghost"
                 size="sm"
                 asChild
-                className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-2"
+                className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-1 sm:px-2"
               >
                 <Link href="/admin/messages">
                   <Send className="w-5 h-5" />
@@ -155,7 +155,7 @@ export default function AppNav({ profile }: { profile: Profile }) {
                 variant="ghost"
                 size="sm"
                 asChild
-                className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-2"
+                className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-1 sm:px-2"
               >
                 <Link href="/admin/pastoral-briefing">
                   <BookOpen className="w-5 h-5" />
@@ -170,7 +170,7 @@ export default function AppNav({ profile }: { profile: Profile }) {
                 variant="ghost"
                 size="sm"
                 asChild
-                className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-2"
+                className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-1 sm:px-2"
               >
                 <Link href="/admin/pastoral-alerts">
                   <HeartHandshake className="w-5 h-5" />
@@ -184,7 +184,7 @@ export default function AppNav({ profile }: { profile: Profile }) {
               variant="ghost"
               size="sm"
               onClick={handleBellClick}
-              className="relative text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-2"
+              className="relative text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-1 sm:px-2"
             >
               <Bell className="w-5 h-5" />
               <span className="text-[10px] leading-tight">알림</span>
@@ -200,7 +200,7 @@ export default function AppNav({ profile }: { profile: Profile }) {
               variant="ghost"
               size="sm"
               onClick={handleLogout}
-              className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-2"
+              className="text-primary-foreground hover:bg-primary-foreground/10 flex flex-col h-12 gap-0 px-1 sm:px-2"
             >
               <LogOut className="w-5 h-5" />
               <span className="text-[10px] leading-tight">로그아웃</span>

@@ -12,6 +12,9 @@ import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
 import MissionCalendar from "@/components/dashboard/MissionCalendar";
 import PastorMessageCard from "@/components/dashboard/PastorMessageCard";
 import UpdateNotice from "@/components/UpdateNotice";
+import BibleCompletionList from "@/components/BibleCompletionList";
+import { fetchSunLevelCompletions } from "@/lib/utils/bible-completion";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
 
 export default async function MissionLeaderDashboard({
   searchParams,
@@ -68,6 +71,13 @@ export default async function MissionLeaderDashboard({
     .eq("report_date", selectedDate)
     .maybeSingle();
 
+  // 순장들이 보고한 성경통독·필사 완료자 (직분은 교적부 조회라 서비스 롤 사용)
+  const bibleCompletions = await fetchSunLevelCompletions(
+    createAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!),
+    missionId,
+    selectedDate
+  );
+
   return (
     <div className="space-y-6">
       {/* 새 기능 공지 (로그인 화면과 동일) */}
@@ -121,6 +131,22 @@ export default async function MissionLeaderDashboard({
           </div>
         </CardContent>
       </Card>
+
+      {/* 순장 → 선교회장: 소속 순에서 올라온 성경통독·필사 보고 */}
+      <div className="space-y-2">
+        <BibleCompletionList
+          completions={bibleCompletions}
+          title="순장 보고 — 성경통독 · 필사"
+          emptyText="이 날짜에 순장님들이 보고한 통독·필사 완료자가 없습니다."
+        />
+        {bibleCompletions.length > 0 && (
+          <p className="text-sm text-muted-foreground px-1" style={{ wordBreak: "keep-all" }}>
+            {missionReport?.status === "submitted"
+              ? "✓ 선교회보고서가 제출되어 목사님께 보고되었습니다."
+              : "선교회보고서를 제출하면 위 명단이 목사님께 함께 보고됩니다."}
+          </p>
+        )}
+      </div>
 
       {/* 선교회보고서 작성 버튼 */}
       <Card>

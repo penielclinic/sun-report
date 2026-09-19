@@ -7,7 +7,7 @@ import { Users, BookOpen, TrendingUp, Megaphone, ArrowLeft } from "lucide-react"
 import { StatisticsCharts } from "@/components/charts/StatisticsCharts";
 import { MISSION_COUNT, BRIDGE_MISSION_ID } from "@/lib/constants/sun-directory";
 import { fetchAllByReportIds } from "@/lib/utils/report-aggregator";
-import { buildBibleCompletions } from "@/lib/utils/bible-completion";
+import { fetchReportedCompletions } from "@/lib/utils/bible-completion";
 import BibleCompletionList from "@/components/BibleCompletionList";
 import type { PeriodData } from "@/app/(app)/admin/statistics/page";
 
@@ -133,28 +133,10 @@ export default async function PublicStatsPage({
     attend: missionMap.get(i + 1) ?? 0,
   }));
 
-  // 성경통독·필사 완료자 — 순보고서 체크에서 자동 반영 (최신 완료자가 위로)
-  type BibleRow = { report_id: string; member_name: string; bible_tongdok: boolean; bible_pilsa: boolean };
-  let bibleRows: BibleRow[] = [];
-  if (reportIds.length > 0) {
-    const { data } = await admin
-      .from("sun_report_members")
-      .select("report_id, member_name, bible_tongdok, bible_pilsa")
-      .in("report_id", reportIds)
-      .or("bible_tongdok.eq.true,bible_pilsa.eq.true");
-    bibleRows = (data ?? []) as BibleRow[];
-  }
-  const bibleByReport = new Map<string, BibleRow[]>();
-  for (const row of bibleRows) {
-    bibleByReport.set(row.report_id, [...(bibleByReport.get(row.report_id) ?? []), row]);
-  }
+  // 성경통독·필사 완료자 — 순장 → 선교회장 → 목사님 보고 순서를 따라,
+  // 선교회장이 선교회보고서를 제출한 건만 공개한다 (브릿지선교회는 목자 직접보고). 최신 완료자가 위로.
   const bibleCompletions = (
-    await buildBibleCompletions(
-      admin,
-      (sunReports ?? [])
-        .filter((r) => bibleByReport.has(r.id))
-        .map((r) => ({ mission_id: r.mission_id, report_date: r.report_date, members: bibleByReport.get(r.id)! }))
-    )
+    await fetchReportedCompletions(admin, since, "9999-12-31")
   ).sort((a, b) => b.reportDate.localeCompare(a.reportDate));
 
   const avgAttend = allPeriodData.length > 0

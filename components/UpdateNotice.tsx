@@ -98,7 +98,7 @@ export default function UpdateNotice({ className = "" }: { className?: string })
           <section className="space-y-1.5">
             <p className="text-base font-bold text-gray-900">📊 모든 성도님께</p>
             <p className="text-base text-gray-700" style={keepAll}>
-              통독·필사를 마친 분들의 명단은 로그인 화면의 <b>&lsquo;전체 통계 현황 보기&rsquo;</b>에도 자동으로 올라갑니다.
+              선교회장님이 목사님께 보고하면, 통독·필사를 마친 분들의 명단이 로그인 화면의 <b>&lsquo;전체 통계 현황 보기&rsquo;</b>에도 자동으로 올라갑니다.
               함께 축하하고 격려해주세요! 🎉
             </p>
           </section>

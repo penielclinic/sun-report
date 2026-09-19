@@ -74,11 +74,18 @@ export async function POST(request: Request) {
         .eq("role", "mission_leader")
         .eq("mission_id", missionId);
       if (leaders && leaders.length > 0) {
+        // 성경통독·필사 완료자가 있으면 알림에 함께 표시 (순장 → 선교회장 보고)
+        const pilsa = validMembers.filter((m) => m.bible_pilsa).length;
+        const tongdok = validMembers.filter((m) => m.bible_tongdok).length;
+        const bibleNote =
+          pilsa || tongdok
+            ? ` (성경${[pilsa && `필사 ${pilsa}명`, tongdok && `통독 ${tongdok}명`].filter(Boolean).join("·")} 보고 포함)`
+            : "";
         await admin.from("notifications").insert(
           leaders.map((l: { id: string }) => ({
             user_id: l.id,
             title: "순보고서 제출",
-            body: `${reportPayload.sun_number}순 ${reportPayload.sun_leader}님이 보고서를 제출했습니다.`,
+            body: `${reportPayload.sun_number}순 ${reportPayload.sun_leader}님이 보고서를 제출했습니다.${bibleNote}`,
           }))
         );
       }

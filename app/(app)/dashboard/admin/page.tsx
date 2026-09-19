@@ -10,6 +10,9 @@ import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
 import { MISSION_COUNT, SUN_COUNT, MISSION_REPORT_COUNT, BRIDGE_MISSION_ID, getMissionName } from "@/lib/constants/sun-directory";
 import { AdminPdfDownload } from "@/components/admin/AdminPdfDownload";
 import UpdateNotice from "@/components/UpdateNotice";
+import BibleCompletionList from "@/components/BibleCompletionList";
+import { fetchReportedCompletions } from "@/lib/utils/bible-completion";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
@@ -49,6 +52,13 @@ export default async function AdminDashboard() {
     0
   );
 
+  // 선교회장이 보고한 성경통독·필사 (직분은 교적부 조회라 서비스 롤 사용)
+  const bibleCompletions = await fetchReportedCompletions(
+    createAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!),
+    thisSunday,
+    thisSunday
+  );
+
   // 선교회별 현황
   const missionMap = new Map(missionReports?.map((r) => [r.mission_id, r]) ?? []);
   const sunMapByMission = new Map<number, typeof sunReports>();
@@ -61,9 +71,9 @@ export default async function AdminDashboard() {
       {/* 새 기능 공지 (로그인 화면과 동일) */}
       <UpdateNotice />
 
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <h2 className="text-xl font-bold text-primary">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-2">
+        <div className="min-w-0">
+          <h2 className="text-xl font-bold text-primary" style={{ wordBreak: "keep-all" }}>
             유진성 목사님, 안녕하세요
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -126,6 +136,20 @@ export default async function AdminDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* 선교회장 → 목사님: 선교회보고서로 보고된 성경통독·필사 (브릿지는 목자 직접보고) */}
+      <div className="space-y-2">
+        <BibleCompletionList
+          completions={bibleCompletions}
+          title="선교회장 보고 — 성경통독 · 필사"
+          emptyText="이번 주 선교회장님들이 보고한 통독·필사 완료자가 없습니다."
+        />
+        {submittedMissions.length < MISSION_REPORT_COUNT && (
+          <p className="text-sm text-muted-foreground px-1" style={{ wordBreak: "keep-all" }}>
+            선교회보고서가 제출된 선교회만 표시됩니다 ({submittedMissions.length}/{MISSION_REPORT_COUNT} 선교회 제출)
+          </p>
+        )}
+      </div>
 
       {/* 통계 현황 */}
       <Link href="/admin/statistics">
