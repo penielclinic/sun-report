@@ -13,6 +13,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { BarChart3, BookOpen } from "lucide-react";
 import { idToEmail, validateId } from "@/lib/utils/id-to-email";
+import UpdateNotice from "@/components/UpdateNotice";
 
 const SAVED_ID_KEY = "sunbogo_saved_id";
 
@@ -75,6 +76,9 @@ export default function LoginPage() {
           <h1 className="text-2xl font-bold text-primary">순보고</h1>
           <p className="text-sm text-muted-foreground mt-1">해운대순복음교회</p>
         </div>
+
+        {/* 새 기능 공지 — 반짝이는 필독 알림 */}
+        <UpdateNotice />
 
         <Card className="shadow-md">
           <CardHeader className="pb-4">
