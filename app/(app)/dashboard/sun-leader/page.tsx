@@ -8,6 +8,10 @@ import SunReportList from "@/components/dashboard/SunReportList";
 import PastorMessageCard from "@/components/dashboard/PastorMessageCard";
 import { getThisSunday, formatDate } from "@/lib/utils/report-aggregator";
 import UpdateNotice from "@/components/UpdateNotice";
+import BibleCompletionList from "@/components/BibleCompletionList";
+import { buildBibleCompletions } from "@/lib/utils/bible-completion";
+import { BRIDGE_MISSION_ID, getSunEntry } from "@/lib/constants/sun-directory";
+import { createClient as createAdminClient } from "@supabase/supabase-js";
 
 export default async function SunLeaderDashboard() {
   const supabase = await createClient();
@@ -36,6 +40,42 @@ export default async function SunLeaderDashboard() {
   const latestReport = thisWeekReport ?? reports?.[0];
   const hasThisWeek = !!thisWeekReport;
 
+  // 이번 주 내 보고서의 성경통독·필사 체크 현황 + 보고 단계 (순장 → 선교회장 → 목사님)
+  // 선교회보고서 제출 여부는 순장 권한(RLS)으로 조회되지 않으므로 서비스 롤 사용
+  const admin = createAdminClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+  const missionId = profile.mission_id ?? getSunEntry(profile.sun_number ?? 0)?.missionId ?? null;
+  let bibleCompletions: Awaited<ReturnType<typeof buildBibleCompletions>> = [];
+  let missionSubmitted = false;
+  if (thisWeekReport && missionId) {
+    const [{ data: flagged }, { data: missionReport }] = await Promise.all([
+      admin
+        .from("sun_report_members")
+        .select("member_name, bible_tongdok, bible_pilsa")
+        .eq("report_id", thisWeekReport.id)
+        .or("bible_tongdok.eq.true,bible_pilsa.eq.true"),
+      admin
+        .from("sunbogo_mission_reports")
+        .select("status")
+        .eq("mission_id", missionId)
+        .eq("report_date", thisSunday)
+        .maybeSingle(),
+    ]);
+    missionSubmitted = missionReport?.status === "submitted";
+    bibleCompletions = await buildBibleCompletions(admin, [
+      { mission_id: missionId, report_date: thisSunday, members: flagged ?? [] },
+    ]);
+  }
+  const isBridge = missionId === BRIDGE_MISSION_ID;
+  const bibleStatus = !thisWeekReport
+    ? null
+    : thisWeekReport.status !== "submitted"
+      ? "보고서를 제출하면 선교회장님께 보고됩니다."
+      : isBridge
+        ? "✓ 목사님께 보고되었습니다. (브릿지선교회 — 목자 직접보고)"
+        : missionSubmitted
+          ? "✓ 선교회장님을 거쳐 목사님께 보고되었습니다."
+          : "✓ 선교회장님께 보고되었습니다. 선교회장님이 선교회보고서를 제출하면 목사님께 보고됩니다.";
+
   return (
     <div className="space-y-6">
       {/* 새 기능 공지 (로그인 화면과 동일) */}
@@ -43,7 +83,7 @@ export default async function SunLeaderDashboard() {
 
       {/* 인사 & 현재 상태 */}
       <div>
-        <h2 className="text-2xl font-bold text-primary">
+        <h2 className="text-2xl font-bold text-primary" style={{ wordBreak: "keep-all" }}>
           {profile.name} 순장님, 안녕하세요!
         </h2>
         <p className="text-base text-muted-foreground mt-1">
@@ -104,6 +144,22 @@ export default async function SunLeaderDashboard() {
               : "제출한 보고서 수정하기"}
         </Link>
       </Button>
+
+      {/* 이번 주 성경통독·필사 보고 현황 */}
+      {thisWeekReport && (
+        <div className="space-y-2">
+          <BibleCompletionList
+            completions={bibleCompletions}
+            title="이번 주 성경통독 · 필사 보고"
+            emptyText="이번 주 보고서에 체크된 통독·필사 완료자가 없습니다."
+          />
+          {bibleCompletions.length > 0 && bibleStatus && (
+            <p className="text-sm text-muted-foreground px-1" style={{ wordBreak: "keep-all" }}>
+              {bibleStatus}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* 목사님 메시지 */}
       <PastorMessageCard userId={user.id} />
